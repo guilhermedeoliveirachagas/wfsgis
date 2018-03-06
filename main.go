@@ -6,10 +6,9 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/boundlessgeo/feshack/ogc"
+	"github.com/boundlessgeo/wt/handlers"
 	"github.com/boundlessgeo/wt/model"
 	"github.com/gin-gonic/gin"
-	"github.com/paulmach/orb"
 )
 
 func main() {
@@ -26,23 +25,27 @@ func main() {
 	}()
 
 	r := gin.Default()
-	r.GET("/test/wfs", func(c *gin.Context) {
 
-		fc := ogc.NewFeatureCollection()
-		p := orb.Point{0, 0}
-		feat := ogc.NewFeature(&p)
-		feat.ID = "testid"
-		feat.Properties["test"] = 1
-		fc.Features = append(fc.Features, feat)
-
-		c.JSON(200, fc)
-
-	})
+	//handlers
+	conformance := handlers.ConformanceHandler{}
+	content := handlers.ContentHandler{}
+	feature := handlers.FeatureHandler{}
 
 	sigchan := make(chan os.Signal, 1)
 	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
 
 	log.Printf("Starting Web Server")
+
+	//the base endpoint should provide a list of all the supported collections
+	// aka tables
+	r.GET("/collection/:collectionId/", feature.Handle)
+
+	//Conformance endpoint
+	r.GET("/api/conformance", conformance.Handle)
+
+	//Content endpoint
+	r.GET("/", content.Handle)
+
 	r.Run() // listen and serve on 0.0.0.0:8080
 
 	running := true

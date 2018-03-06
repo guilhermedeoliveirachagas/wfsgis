@@ -4,8 +4,11 @@
 [[projects]]
   branch = "master"
   name = "github.com/boundlessgeo/feshack"
-  packages = ["ogc"]
-  revision = "f070d8a0c3817b0fc64c1d8244263cc08a9e9fa3"
+  packages = [
+    "handlers",
+    "ogc"
+  ]
+  revision = "d4865e10b078ddb5d56fe7e2f70fb0914067aba4"
 
 [[projects]]
   branch = "master"
@@ -80,6 +83,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "061a386ef9109937b5f7e7c33876c6ac58f27dd57788945ec044e7302a73a5b6"
+  inputs-digest = "a15aa481025d5f216311cdb0051de6879a0a7d0cf9fe078dec74437c97f17875"
   solver-name = "gps-cdcl"
   solver-version = 1
