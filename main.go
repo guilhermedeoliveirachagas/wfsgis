@@ -6,13 +6,14 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/boundlessgeo/wt/handlers"
 	"github.com/boundlessgeo/wt/model"
 )
 
 func main() {
 
 	db := model.NewDB("wfsthree", "wfsthree", "wfsthree", false)
-	h := NewHTTPServer(db)
+	h := handlers.NewHTTPServer(db)
 	var dbErr, httpErr error
 
 	go func() {
