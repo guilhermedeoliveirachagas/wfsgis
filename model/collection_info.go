@@ -2,6 +2,7 @@ package model
 
 import (
 	"log"
+	"strings"
 
 	"github.com/boundlessgeo/wt/ogc"
 	"github.com/lib/pq"
@@ -43,16 +44,16 @@ func (db *DB) AllCollectionInfos() []*CollectionInfoDB {
 }
 
 func (db *DB) AddCollection(coll *CollectionInfoDB) error {
-	// qry := "INSERT INTO collection_info (geom_type,table_name," +
-	// 	"description,title,extent,crs,links) " +
-	// 	"VALUES ($1,$2,$3,$4,$5,$6,$7)"
+	qry := "INSERT INTO collection_info (geom_type,table_name," +
+		"description,title,crs) " +
+		"VALUES ($1,$2,$3,$4,ARRAY[$5])"
+	ci := coll.CollectionInfo
+	_, err := db.db.Exec(qry, coll.geomType, ci.Name, ci.Description,
+		ci.Title, strings.Join(ci.CRS, ","))
 
-	// _, err := db.db.Exec(qry, coll.geomType, coll.co.Name, coll.co.Description,
-	// 	coll.CollectionInfo.Title, coll.co.Extent, coll.co.CRS, coll.co.Links)
-
-	// if err != nil {
-	// 	return err
-	// }
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -60,6 +61,6 @@ func (db *DB) AddCollection(coll *CollectionInfoDB) error {
 func (db *DB) FindCollection(collName string) *CollectionInfoDB {
 	qry := "SELECT * FROM collection_info WHERE table_name = $1"
 	coll := new(CollectionInfoDB)
-	db.db.QueryRow(qry).Scan(&coll)
+	db.db.QueryRow(qry, collName).Scan(&coll)
 	return coll
 }
