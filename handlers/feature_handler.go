@@ -10,14 +10,34 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// h.router.GET("/collections/:collid/items", getFeaturesForCollection())
-// h.router.GET("/collections/:collid/items/:itemid", getFeatureFromCollection())
-// h.router.POST("/collections/:collid/items", createFeature())
-// h.router.PUT("/collections/:collid/items/:fid", updateFeature())
-// h.router.DELETE("/collections/:collid/items/:fid", deleteFeature())
+
 type FeatureHandler struct {
 	Store *model.DB
 }
+
+func (h *HTTPServer) makeFeatureHandlers(d *model.DB) {
+
+	h.router.GET("/collections/:collid/items", getFeatures(d))
+	h.router.GET("/collections/:collid/items/:itemid", getFeatureFromCollection(d))
+	h.router.POST("/collections/:collid/items", createFeature(d))
+	h.router.PUT("/collections/:collid/items/:fid", updateFeature(d))
+	h.router.DELETE("/collections/:collid/items/:fid", deleteFeature(d))
+
+}
+
+/**
+Updates a feature
+ */
+func updateFeature(db *model.DB) func(*gin.Context){}
+/**
+Creates a feature
+ */
+func createFeature(db *model.DB) func(*gin.Context){}
+func deleteFeature(db *model.DB) func(*gin.Context){}
+func getFeatureFromCollection(db *model.DB) func(*gin.Context){}
+func getFeatures(db *model.DB) func(*gin.Context){}
+
+
 
 func (fh *FeatureHandler) Handle(c *gin.Context) {
 
