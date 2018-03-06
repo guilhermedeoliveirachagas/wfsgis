@@ -9,7 +9,7 @@ import (
 )
 
 type FeatureHandler struct {
-	store *model.DB
+	Store *model.DB
 }
 
 func (fh *FeatureHandler) Handle(c *gin.Context) {
@@ -19,7 +19,7 @@ func (fh *FeatureHandler) Handle(c *gin.Context) {
 		{
 			collectionName := c.Request.URL.Path
 			getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
-			fh.store.GetFeatures(getFeature)
+			fh.Store.GetFeatures(getFeature)
 
 		}
 	case "POST":
@@ -28,7 +28,7 @@ func (fh *FeatureHandler) Handle(c *gin.Context) {
 			fc := &ogc.FeatureCollection{}
 			data, _ := ioutil.ReadAll(c.Request.Body)
 			json.Unmarshal(data, fc)
-			fh.store.CreateCollectionTable(collectionName, fc.Features)
+			fh.Store.CreateCollectionTable(collectionName, fc.Features)
 		}
 
 	default:
