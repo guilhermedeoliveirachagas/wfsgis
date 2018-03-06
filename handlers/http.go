@@ -23,7 +23,7 @@ func NewHTTPServer(d *model.DB) *HTTPServer {
 	}, router: router}
 
 	httpServer.makeConformanceHandlers()
-	httpServer.makeContentHandlers(d)
+	httpServer.makeCollectionHandlers(d)
 
 	return httpServer
 }

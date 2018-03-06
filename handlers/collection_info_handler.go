@@ -8,9 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *HTTPServer) makeContentHandlers(d *model.DB) {
+func (h *HTTPServer) makeCollectionHandlers(d *model.DB) {
 	h.router.GET("/collections", getCollectionsInfo(d))
-	// h.router.GET("/collections/:collid/schema", getCollectionInfo(d))
+	h.router.GET("/collections/:collid/schema", getCollectionInfo(d))
 	// h.router.PUT("/collections/:collid/schema", updateCollectionInfo())
 	// h.router.POST("/collections", createCollectionInfo(d))
 	// h.router.DELETE("/collections/:collid", deleteCollection())
@@ -27,8 +27,9 @@ func getCollectionsInfo(db *model.DB) func(*gin.Context) {
 	}
 }
 
-func createCollection(db *model.DB) func(*gin.Context) {
+func getCollectionInfo(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		db.CreateCollectionTable()
+		collInfo := db.FindCollection(c.Param(":collid"))
+		c.JSON(http.StatusOK, gin.H{"collection": collInfo})
 	}
 }
