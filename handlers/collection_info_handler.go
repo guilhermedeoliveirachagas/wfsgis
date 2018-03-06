@@ -9,8 +9,11 @@ import (
 )
 
 func (h *HTTPServer) makeContentHandlers(d *model.DB) {
-	h.router.GET("/", getCollectionsInfo(d))
 	h.router.GET("/collections", getCollectionsInfo(d))
+	// h.router.GET("/collections/:collid/schema", getCollectionInfo(d))
+	// h.router.PUT("/collections/:collid/schema", updateCollectionInfo())
+	// h.router.POST("/collections", createCollectionInfo(d))
+	// h.router.DELETE("/collections/:collid", deleteCollection())
 }
 
 func getCollectionsInfo(db *model.DB) func(*gin.Context) {
@@ -21,5 +24,11 @@ func getCollectionsInfo(db *model.DB) func(*gin.Context) {
 			cis = append(cis, v.CollectionInfo)
 		}
 		c.JSON(http.StatusOK, gin.H{"collections": cis})
+	}
+}
+
+func createCollection(db *model.DB) func(*gin.Context) {
+	return func(c *gin.Context) {
+		db.CreateCollectionTable()
 	}
 }
