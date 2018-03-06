@@ -72,11 +72,11 @@ func (d *DB) Stop(err error) {
 func (d *DB) createCollectionInfoTable() error {
 	qry := "CREATE TABLE IF NOT EXISTS collection_info (" +
 		"geom_type INTEGER," +
-		"name TEXT," +
+		"tablename TEXT," +
 		"title TEXT," +
 		"description TEXT," +
 		"links TEXT[]," +
-		"extents NUMERIC[]," +
+		"extent NUMERIC[]," +
 		"crs TEXT)"
 	_, err := d.db.Exec(qry)
 	if err != nil {

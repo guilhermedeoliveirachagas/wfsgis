@@ -1,7 +1,7 @@
 package ogc
 
 type CollectionInfo struct {
-	Name        string   `json:"name" db:"name"`
+	Name        string   `json:"name" db:"table_name"`
 	Links       []*Link  `json:"links" db:"links"`
 	Title       string   `json:"title,omitempty" db:"title"`
 	Description string   `json:"description,omitempty" db:"description"`
