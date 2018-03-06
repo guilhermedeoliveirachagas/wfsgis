@@ -3,4 +3,3 @@ LABEL maintainer="Wes Richardet <wrichardet@boundlessgeo.com>"
 
 COPY ./create_user.sh   /docker-entrypoint-initdb.d/10-create_user.sh
 COPY ./create_db.sh     /docker-entrypoint-initdb.d/20-create_db.sh
-COPY ./create_table.sh  /docker-entrypoint-initdb.d/30-create_table.sh
