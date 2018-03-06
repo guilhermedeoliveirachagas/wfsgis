@@ -2,10 +2,6 @@ package main
 
 import (
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
-
 	"github.com/boundlessgeo/wt/handlers"
 	"github.com/boundlessgeo/wt/model"
 	"github.com/gin-gonic/gin"
@@ -31,8 +27,8 @@ func main() {
 	content := handlers.ContentHandler{}
 	feature := handlers.FeatureHandler{}
 
-	sigchan := make(chan os.Signal, 1)
-	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
+	//sigchan := make(chan os.Signal, 1)
+	//signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
 
 	log.Printf("Starting Web Server")
 
@@ -46,16 +42,16 @@ func main() {
 	//Content endpoint
 	r.GET("/", content.Handle)
 
-	r.Run() // listen and serve on 0.0.0.0:8080
+	r.Run()
 
-	running := true
-	for running == true {
-		select {
-		case sig := <-sigchan:
-			db.Stop(dbErr)
-			log.Printf("Caught signal %v\n", sig)
-			running = false
-		}
-	}
+	//running := true
+	//for running == true {
+	//	select {
+	//	case sig := <-sigchan:
+	//		db.Stop(dbErr)
+	//		log.Printf("Caught signal %v\n", sig)
+	//		running = false
+	//	}
+	//}
 
 }
