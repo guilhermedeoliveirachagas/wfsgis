@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"github.com/boundlessgeo/wt/model"
 	"github.com/gin-gonic/gin"
-	"github.com/boundlessgeo/wt/ogc"
 )
 
 type ContentHandler struct {
@@ -11,7 +11,12 @@ type ContentHandler struct {
 
 }
 
-func(*ContentHandler) Handle(c *gin.Context){
+func (h *HTTPServer) makeContentHandlers(d *model.DB) {
+	h.router.GET("/", getCollections(d))
+}
 
-	c.JSON(200,ogc.NewContent())
+func getCollections(db *model.DB) func(*gin.Context) {
+	return func(g *gin.Context) {
+
+	}
 }

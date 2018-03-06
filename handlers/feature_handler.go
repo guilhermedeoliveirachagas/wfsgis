@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/boundlessgeo/wt/ogc"
 	"github.com/boundlessgeo/wt/model"
 	"encoding/json"
 	"io/ioutil"
+	"github.com/gin-gonic/gin"
 )
 
 type FeatureHandler struct {
@@ -18,7 +18,7 @@ func (fh *FeatureHandler) Handle(c *gin.Context) {
 	case "GET":
 		{
 			collectionName := c.Request.URL.Path
-			getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: nil, CollectionName: collectionName}
+			getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
 			fh.store.GetFeatures(getFeature)
 
 		}
@@ -36,4 +36,7 @@ func (fh *FeatureHandler) Handle(c *gin.Context) {
 			c.JSON(405, ogc.Exception{"405", "Method not allowed"})
 		}
 	}
+
+
 }
+

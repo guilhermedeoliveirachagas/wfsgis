@@ -73,11 +73,11 @@ func (d *DB) Stop(err error) {
 func (d *DB) createCollectionInfoTable() error {
 	qry := "CREATE TABLE IF NOT EXISTS collection_info (" +
 		"geom_type INTEGER," +
-		"name TEXT," +
+		"tablename TEXT," +
 		"title TEXT," +
 		"description TEXT," +
 		"links TEXT[]," +
-		"extents NUMERIC[]," +
+		"extent NUMERIC[]," +
 		"crs TEXT)"
 	_, err := d.db.Exec(qry)
 	if err != nil {
@@ -88,13 +88,14 @@ func (d *DB) createCollectionInfoTable() error {
 
 
 //creates a feature table based
-func(d *DB) CreateCollectionTable(collectionName string, []*ogc.Feature) error{
+func(d *DB) CreateCollectionTable(collectionName string, features []*ogc.Feature) error{
 
-	 sql := "CREATE TABLE IF NOT EXISTS %s (_fid SERIAL UNIQUE, properties)"
+	 //sql := "CREATE TABLE IF NOT EXISTS %s (_fid SERIAL UNIQUE, properties)"
 
+	return nil
 
 }
 //gets features based on query
 func(d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
-
+	return nil, nil
 }
