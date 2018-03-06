@@ -3,15 +3,37 @@ package handlers
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/boundlessgeo/wt/ogc"
+	"github.com/boundlessgeo/wt/model"
+	"encoding/json"
+	"io/ioutil"
 )
 
 type FeatureHandler struct {
-
-
+	store *model.DB
 }
 
+func (fh *FeatureHandler) Handle(c *gin.Context) {
 
-func(*FeatureHandler) Handle(c *gin.Context){
+	switch c.Request.Method {
+	case "GET":
+		{
+			collectionName := c.Request.URL.Path
+			getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: nil, CollectionName: collectionName}
+			fh.store.GetFeatures(getFeature)
 
-	c.JSON(200,ogc.Exception{"404","Collection doesn't exist"})
+		}
+	case "POST":
+		{
+			collectionName := c.Request.URL.Path
+			fc := &ogc.FeatureCollection{}
+			data, _ := ioutil.ReadAll(c.Request.Body)
+			json.Unmarshal(data, fc)
+			fh.store.CreateCollectionTable(collectionName, fc.Features)
+		}
+
+	default:
+		{
+			c.JSON(405, ogc.Exception{"405", "Method not allowed"})
+		}
+	}
 }
