@@ -6,6 +6,7 @@ import (
 	"log"
 
 	_ "github.com/lib/pq"
+	"github.com/boundlessgeo/wt/ogc"
 )
 
 //DB holds the DB connection
@@ -83,4 +84,17 @@ func (d *DB) createCollectionInfoTable() error {
 		return err
 	}
 	return nil
+}
+
+
+//creates a feature table based
+func(d *DB) CreateCollectionTable(collectionName string, []*ogc.Feature) error{
+
+	 sql := "CREATE TABLE IF NOT EXISTS %s (_fid SERIAL UNIQUE, properties)"
+
+
+}
+//gets features based on query
+func(d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
+
 }
