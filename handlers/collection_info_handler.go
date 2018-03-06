@@ -9,6 +9,7 @@ import (
 )
 
 func (h *HTTPServer) makeContentHandlers(d *model.DB) {
+	h.router.GET("/", getCollectionsInfo(d))
 	h.router.GET("/collections", getCollectionsInfo(d))
 }
 
