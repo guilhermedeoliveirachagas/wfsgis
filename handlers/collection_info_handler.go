@@ -10,6 +10,7 @@ import (
 
 func (h *HTTPServer) makeCollectionHandlers(d *model.DB) {
 
+
 	h.router.GET("/collections", getCollectionsInfo(d))
 	h.router.GET("/collections/:collid/schema", getCollectionInfo(d))
 	h.router.PUT("/collections/:collid/schema", updateCollectionInfo(d))
@@ -22,27 +23,22 @@ Deletes a collection
  */
 func deleteCollection(db *model.DB) func(*gin.Context){
 
+	return nil
 }
 
 /**
 Creates a collection
  */
 func createCollectionInfo(db *model.DB) func(*gin.Context){
-
+	return nil
 }
 /**
 Updates a collection
  */
 func updateCollectionInfo(db *model.DB) func(*gin.Context){
-
+	return nil
 }
 
-/**
-Gets a single collection
- */
-func getCollectionInfo(db *model.DB) func(*gin.Context) {
-
-}
 
 /**
 Gets all collections
@@ -58,8 +54,9 @@ func getCollectionsInfo(db *model.DB) func(*gin.Context) {
 	}
 }
 
-func createCollection(db *model.DB) func(*gin.Context) {
+func getCollectionInfo(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		db.CreateCollectionTable()
+		collInfo := db.FindCollection(c.Param(":collid"))
+		c.JSON(http.StatusOK, gin.H{"collection": collInfo})
 	}
 }

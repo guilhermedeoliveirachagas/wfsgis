@@ -31,8 +31,6 @@ func NewHTTPServer(d *model.DB) *HTTPServer {
 	// h.router.POST("/collections", createCollectionInfo(d))
 	// h.router.DELETE("/collections/:collid", deleteCollection())
 
-
-
 	return httpServer
 }
 

@@ -28,14 +28,33 @@ func (h *HTTPServer) makeFeatureHandlers(d *model.DB) {
 /**
 Updates a feature
  */
-func updateFeature(db *model.DB) func(*gin.Context){}
+func updateFeature(db *model.DB) func(*gin.Context){
+	return nil
+}
 /**
 Creates a feature
  */
-func createFeature(db *model.DB) func(*gin.Context){}
-func deleteFeature(db *model.DB) func(*gin.Context){}
-func getFeatureFromCollection(db *model.DB) func(*gin.Context){}
-func getFeatures(db *model.DB) func(*gin.Context){}
+func createFeature(db *model.DB) func(*gin.Context){
+	return nil
+}
+/**
+Deletes a feature
+ */
+func deleteFeature(db *model.DB) func(*gin.Context){
+	return nil
+}
+/**
+Gets a feature by collection
+ */
+func getFeatureFromCollection(db *model.DB) func(*gin.Context){
+	return nil
+}
+/**
+Gets features
+ */
+func getFeatures(db *model.DB) func(*gin.Context){
+	return nil
+}
 
 
 

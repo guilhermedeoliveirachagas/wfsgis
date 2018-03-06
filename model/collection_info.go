@@ -57,7 +57,7 @@ func (db *DB) AddCollection(coll *CollectionInfoDB) error {
 	return nil
 }
 
-func (db *DB) FindCollection(collName *string) *CollectionInfoDB {
+func (db *DB) FindCollection(collName string) *CollectionInfoDB {
 	qry := "SELECT * FROM collection_info WHERE table_name = $1"
 	coll := new(CollectionInfoDB)
 	db.db.QueryRow(qry).Scan(&coll)
