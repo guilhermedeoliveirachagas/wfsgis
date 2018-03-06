@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"github.com/gin-gonic/gin"
+	"strings"
 )
 
 type FeatureHandler struct {
@@ -17,14 +18,14 @@ func (fh *FeatureHandler) Handle(c *gin.Context) {
 	switch c.Request.Method {
 	case "GET":
 		{
-			collectionName := c.Request.URL.Path
+			collectionName := strings.TrimLeft(c.Request.URL.Path,"/")
 			getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
 			fh.Store.GetFeatures(getFeature)
 
 		}
 	case "POST":
 		{
-			collectionName := c.Request.URL.Path
+			collectionName := strings.TrimLeft(c.Request.URL.Path,"/")
 			fc := &ogc.FeatureCollection{}
 			data, _ := ioutil.ReadAll(c.Request.Body)
 			json.Unmarshal(data, fc)
