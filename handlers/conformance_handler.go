@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/boundlessgeo/feshack/ogc"
+	"github.com/boundlessgeo/wt/ogc"
 )
 
 type ConformanceHandler struct {
