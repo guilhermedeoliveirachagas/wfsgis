@@ -28,6 +28,11 @@ func NewDB(dbname, user, pass string, sslMode bool) *DB {
 	return &DB{nil, connStr}
 }
 
+type execSql struct {
+	err error
+	db  *DB
+}
+
 //Start makes the db connection active
 func (d *DB) Start() error {
 	log.Println("Starting DB")
@@ -42,6 +47,10 @@ func (d *DB) Start() error {
 	}
 
 	d.db = db
+
+	if err = d.createCollectionInfoTable(); err != nil {
+		log.Panic("Error creating collection info table")
+	}
 
 	log.Println("Started DB")
 	return nil
@@ -58,4 +67,20 @@ func (d *DB) Stop(err error) {
 	if err = d.db.Close(); err != nil {
 		log.Println(err)
 	}
+}
+
+func (d *DB) createCollectionInfoTable() error {
+	qry := "CREATE TABLE IF NOT EXISTS collection_info (" +
+		"geom_type INTEGER," +
+		"name TEXT," +
+		"title TEXT," +
+		"description TEXT," +
+		"links TEXT[]," +
+		"extents NUMERIC[]," +
+		"crs TEXT)"
+	res, err := d.db.Exec(qry)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -1,15 +1,9 @@
 package ogc
 
-import (
-
-)
-
-type Link struct{
-
-	Href string `json:"href"`
-	Rel string `json:"rel,omitempty"`
-	Type string `json:"rel,omitempty"`
+type Link struct {
+	Href    string `json:"href"`
+	Rel     string `json:"rel,omitempty"`
+	Typ     string `json:"type,omitempty"`
 	Reflang string `json:"hreflang,omitempty"`
-	Title string `json:"title,omitempty"`
-
+	Title   string `json:"title,omitempty"`
 }

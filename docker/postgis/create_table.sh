@@ -1,12 +1,11 @@
 psql -U wfsthree -d wfsthree -c \
-	"CREATE TABLE IF NOT EXISTS wfst_contents (
-		table_name TEXT,
-	 	ident TEXT,
+	"CREATE TABLE IF NOT EXISTS collection_info (
+		geom_type INTEGER
 	 	name TEXT,
-	 	description TEXT,
-		min_x DOUBLE PRECISION,
-  		min_y DOUBLE PRECISION,
-  		max_x DOUBLE PRECISION,
-  		max_y DOUBLE PRECISION,
-  		srs_id INTEGER)" \
+		title TEXT,
+		description TEXT,
+		links []TEXT,
+		extents []NUMERIC
+	 	crs TEXT,
+		)" \
 	-h localhost
