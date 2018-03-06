@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-
 	_ "github.com/lib/pq"
 	"github.com/boundlessgeo/wt/ogc"
 )
@@ -90,8 +89,18 @@ func (d *DB) createCollectionInfoTable() error {
 //creates a feature table based
 func(d *DB) CreateCollectionTable(collectionName string, features []*ogc.Feature) error{
 
-	 //sql := "CREATE TABLE IF NOT EXISTS %s (_fid SERIAL UNIQUE, properties)"
-
+	 sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL UNIQUE, json JSONB)",collectionName)
+	_, err := d.db.Exec(sql)
+	if err != nil {
+		log.Printf("Error creating table: %v",err)
+		return err
+	}
+	makeGeom := "SELECT AddGeometryColumn ('public',$1,'geom',4326,'POINT',2)"
+	_, err = d.db.Exec(makeGeom,collectionName)
+	if err != nil {
+		log.Printf("Error adding geometry column: %v",err)
+		return err
+	}
 	return nil
 
 }
