@@ -1,0 +1,25 @@
+version: '2'
+volumes:
+  pg-data:
+    driver: local
+services:
+  db:
+    container_name: db
+    build: ./docker/postgis
+    image: wfsthree/postgis:latest
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  web:
+    container_name: web  # optional
+    restart: always  # optional
+    image: sosedoff/pgweb
+    ports:
+      - "8081:8081"
+    links:
+      - db:db
+    environment:
+      - DATABASE_URL=postgres://wfsthree:wfsthree@db:5432/wfsthree?sslmode=disable
+    depends_on:
+      - db
