@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/boundlessgeo/wt/ogc"
 	"fmt"
+	"log"
 )
 
 //creates a feature table based
