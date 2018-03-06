@@ -1,17 +1,17 @@
 package handlers
 
 import (
-	"github.com/gin-gonic/gin"
+	"net/http"
+
 	"github.com/boundlessgeo/wt/ogc"
+	"github.com/gin-gonic/gin"
 )
 
-type ConformanceHandler struct {
+func (h *HTTPServer) makeConformanceHandlers() {
 
-	//stuff...
+	conformance := ogc.NewConformance()
 
-}
-
-func(*ConformanceHandler) Handle(c *gin.Context){
-
-	c.JSON(200,ogc.NewConformance())
+	h.router.GET("/api/conformance", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"conformsTo": conformance})
+	})
 }

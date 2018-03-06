@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+
 	"github.com/boundlessgeo/wt/model"
 	"github.com/gin-gonic/gin"
 )
@@ -21,8 +22,7 @@ func NewHTTPServer(d *model.DB) *HTTPServer {
 		Handler: router,
 	}, router: router}
 
-
-
+	httpServer.makeConformanceHandlers()
 	httpServer.makeContentHandlers(d)
 
 	return httpServer
