@@ -4,8 +4,11 @@
 [[projects]]
   branch = "master"
   name = "github.com/boundlessgeo/feshack"
-  packages = ["ogc"]
-  revision = "f070d8a0c3817b0fc64c1d8244263cc08a9e9fa3"
+  packages = [
+    "handlers",
+    "ogc"
+  ]
+  revision = "d4865e10b078ddb5d56fe7e2f70fb0914067aba4"
 
 [[projects]]
   branch = "master"
@@ -28,6 +31,15 @@
   packages = ["proto"]
   revision = "925541529c1fa6821df4e44ce2723319eb2be768"
   version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/lib/pq"
+  packages = [
+    ".",
+    "oid"
+  ]
+  revision = "88edab0803230a3898347e77b474f8c1820a1f20"
 
 [[projects]]
   name = "github.com/mattn/go-isatty"
@@ -71,6 +83,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "0c5e02a963e416e215525683a40676a09d6729a646a6e3f1549300a280c75717"
+  inputs-digest = "a15aa481025d5f216311cdb0051de6879a0a7d0cf9fe078dec74437c97f17875"
   solver-name = "gps-cdcl"
   solver-version = 1

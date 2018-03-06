@@ -4,9 +4,9 @@ psql -U wfsthree -d wfsthree -c \
 	 	ident TEXT,
 	 	name TEXT,
 	 	description TEXT,
-		min_x DOUBLE,
-  	min_y DOUBLE,
-  	max_x DOUBLE,
-  	max_y DOUBLE,
-  	srs_id INTEGER)" \
+		min_x DOUBLE PRECISION,
+  		min_y DOUBLE PRECISION,
+  		max_x DOUBLE PRECISION,
+  		max_y DOUBLE PRECISION,
+  		srs_id INTEGER)" \
 	-h localhost

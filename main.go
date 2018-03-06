@@ -1,47 +1,61 @@
 package main
 
 import (
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"github.com/boundlessgeo/wt/handlers"
+	"github.com/boundlessgeo/wt/model"
 	"github.com/gin-gonic/gin"
-	"github.com/boundlessgeo/feshack/ogc"
-	"github.com/paulmach/orb"
-	"github.com/boundlessgeo/feshack/handlers"
 )
 
 func main() {
-	r := gin.Default()
 
+	db := model.NewDB("wfsthree", "wfsthree", "wfsthree", false)
+	var dbErr error
+
+	go func() {
+		dbErr = db.Start()
+
+		if dbErr != nil {
+			log.Panic(dbErr)
+		}
+	}()
+
+	r := gin.Default()
 
 	//handlers
 	conformance := handlers.ConformanceHandler{}
 	content := handlers.ContentHandler{}
 	feature := handlers.FeatureHandler{}
 
-	//hacked PoC feature encoding endpoint
-	r.GET("/test/wfs", func(c *gin.Context) {
+	sigchan := make(chan os.Signal, 1)
+	signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
 
-		fc := ogc.NewFeatureCollection()
-		p := orb.Point{0,0}
-		feat := ogc.NewFeature(&p)
-		feat.ID = "testid"
-		feat.Properties["test"] = 1
-		fc.Features = append(fc.Features, feat)
-
-		c.JSON(200, fc)
-
-		})
-
+	log.Printf("Starting Web Server")
 
 	//the base endpoint should provide a list of all the supported collections
 	// aka tables
 	r.GET("/collection/:collectionId/", feature.Handle)
 
 	//Conformance endpoint
-	r.GET("/api/conformance",conformance.Handle)
+	r.GET("/api/conformance", conformance.Handle)
 
 	//Content endpoint
-	r.GET("/",content.Handle)
-
+	r.GET("/", content.Handle)
 
 	r.Run() // listen and serve on 0.0.0.0:8080
+
+	running := true
+	for running == true {
+		select {
+		case sig := <-sigchan:
+			db.Stop(dbErr)
+			log.Printf("Caught signal %v\n", sig)
+			running = false
+		}
+	}
 
 }
