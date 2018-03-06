@@ -1,9 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"strings"
 	"github.com/boundlessgeo/wt/model"
 	"github.com/boundlessgeo/wt/ogc"
 	"github.com/gin-gonic/gin"
@@ -67,7 +64,7 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 		features, err := db.GetFeatures(getFeature)
 		if err != nil{
 
-			c.JSON(500, ogc.Exception{500,"Error fetching features"})
+			c.JSON(500, ogc.Exception{"500","Error fetching features"})
 		}
 
 		fc := ogc.NewFeatureCollection()
