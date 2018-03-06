@@ -22,18 +22,17 @@ type CollectionInfoDB struct {
 	co       ogc.CollectionInfo
 }
 
-func (db *DB) AllCollectionInfos() []*CollectionInfoDB {
-	qry := "SELECT * FROM collection_info"
+func (db *DB) AllCollectionInfos() []*ogc.CollectionInfo {
+	qry := "SELECT table_name,description,title FROM collection_info"
 	rows, err := db.db.Query(qry)
 	if err != nil {
 		log.Println(err)
 	}
 	defer rows.Close()
-	colls := make([]*CollectionInfoDB, 0)
+	colls := make([]*ogc.CollectionInfo, 0)
 	for rows.Next() {
-		c := new(CollectionInfoDB)
-		rows.Scan(&c.co)
-		rows.Scan(&c.geomType)
+		c := new(ogc.CollectionInfo)
+		rows.Scan(&c)
 		colls = append(colls, c)
 	}
 	return colls
