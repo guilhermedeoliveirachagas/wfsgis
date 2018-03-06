@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/boundlessgeo/feshack/handlers"
 	"github.com/boundlessgeo/wt/model"
 	"github.com/gin-gonic/gin"
 )
@@ -23,18 +21,7 @@ func NewHTTPServer(d *model.DB) *HTTPServer {
 		Handler: router,
 	}, router: router}
 
-	r := gin.Default()
 
-	//handlers
-	conformance := handlers.ConformanceHandler{}
-	feature := handlers.FeatureHandler{}
-
-	//the base endpoint should provide a list of all the supported collections
-	// aka tables
-	r.GET("/collection/:collectionId/", feature.Handle)
-
-	//Conformance endpoint
-	r.GET("/api/conformance", conformance.Handle)
 
 	httpServer.makeContentHandlers(d)
 
