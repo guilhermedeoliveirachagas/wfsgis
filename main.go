@@ -27,21 +27,26 @@ func NewHTTPServer() *HTTPServer {
 	}, router: router}
 
 	r := gin.Default()
+	r.Use(gin.Logger())
+	// don't let errors kill the server
+	r.Use(gin.Recovery())
+
 
 	//handlers
 	conformance := handlers.ConformanceHandler{}
 	content := handlers.ContentHandler{}
 	feature := handlers.FeatureHandler{}
 
-	//the base endpoint should provide a list of all the supported collections
-	// aka tables
-	r.GET("/collection/:collectionId/", feature.Handle)
-
 	//Conformance endpoint
 	r.GET("/api/conformance", conformance.Handle)
 
 	//Content endpoint
 	r.GET("/", content.Handle)
+
+	//because the list of collections is dynamic we need to support random stuff here
+	//any GETs that don't correspond to a feature table will 404 or throw an OGC exception
+	//any POSTS should create a table
+	 r.NoRoute(feature.Handle)
 
 	return httpServer
 }
