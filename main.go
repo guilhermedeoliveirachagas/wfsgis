@@ -30,15 +30,17 @@ func main() {
 
 		})
 
+
+	//the base endpoint should provide a list of all the supported collections
+	// aka tables
+	r.GET("/collection/:collectionId/", feature.Handle)
+
 	//Conformance endpoint
 	r.GET("/api/conformance",conformance.Handle)
 
 	//Content endpoint
 	r.GET("/",content.Handle)
 
-	//the base endpoint should provide a list of all the supported collections
-	// aka tables
-	r.GET("/:collectionId", feature.Handle);
 
 	r.Run() // listen and serve on 0.0.0.0:8080
 }
