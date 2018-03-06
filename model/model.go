@@ -78,7 +78,7 @@ func (d *DB) createCollectionInfoTable() error {
 		"links TEXT[]," +
 		"extents NUMERIC[]," +
 		"crs TEXT)"
-	res, err := d.db.Exec(qry)
+	_, err := d.db.Exec(qry)
 	if err != nil {
 		return err
 	}
