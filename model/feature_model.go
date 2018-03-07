@@ -91,20 +91,22 @@ func (d *DB) DeleteItem(collectionId string, itemId string)(error){
 /*
 Get Item by Id
  */
-func (d *DB) GetItem(collectionId string, itemId string)(collection *ogc.FeatureCollection,error){
+func (d *DB) GetItem(collectionId string, itemId string)(*ogc.FeatureCollection,error){
 
 	//item id needs to be an int
 	numberId, _ := strconv.Atoi(itemId)
 
-	get := fmt.Sprintf("Select fid, ST_AsWKT(geom), json from %s WHERE _fid = $1", collectionId)
+	get := fmt.Sprintf("Select _fid, geom, json from %s WHERE _fid = $1", collectionId)
 	var fid int
+	var b []byte
+	var jsonStr string
 
 
-
-	_,err :=d.db.QueryRow(get,numberId).Scan()
+	err :=d.db.QueryRow(get,numberId).Scan(&fid,&b,&jsonStr)
 	if err != nil{
-		log.Printf("Error deleting item: %v",err)
+		log.Printf("Error getting item: %v",err)
 	}
+
 	return err
 
 
