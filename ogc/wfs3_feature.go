@@ -1,6 +1,8 @@
 package ogc
 
 import (
+	"encoding/json"
+
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/geojson"
 )
@@ -30,6 +32,26 @@ func (f *Feature) UnmarshalJSON(b []byte) error {
 	f.Type = fg.Type
 
 	return nil
+}
+
+func (f *Feature) MarshalJSON() ([]byte, error) {
+	var b []byte
+	b = append(b, `{"type":"`...)
+	b = append(b, f.Type...)
+	b = append(b, `",`...)
+	b = append(b, `"id":"`...)
+	b = append(b, f.ID...)
+	b = append(b, `","properties":`...)
+	p, _ := json.Marshal(f.Properties)
+	b = append(b, p...)
+	b = append(b, `,"geometry":`...)
+	g, err := json.Marshal(f.Geometry)
+	if err != nil {
+		return nil, err
+	}
+	b = append(b, g...)
+	b = append(b, `}`...)
+	return b, nil
 }
 
 func NewFeature(geometry orb.Geometry) *Feature {

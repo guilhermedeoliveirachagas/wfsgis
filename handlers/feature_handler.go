@@ -85,10 +85,12 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 		//	c.JSON(500, ogc.Exception{"500","Error fetching features"})
 		//}
 
-		fc := ogc.NewFeatureCollection()
-		//fc.Features = features
-		fc.Type = "FeatureCollection"
-		c.JSON(200, fc)
-
+		fc, err := db.GetFeatures(ogc.GetFeatureRequest{CollectionName: c.Param("collid")})
+		if err != nil {
+			c.JSON(http.StatusBadRequest, ogc.Exception{"500", err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"FeatureCollection": fc})
 	}
+
 }

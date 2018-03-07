@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/boundlessgeo/wt/ogc"
+	"github.com/paulmach/orb/encoding/wkb"
 	"github.com/paulmach/orb/encoding/wkt"
 )
 
@@ -28,7 +29,7 @@ func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool
 
 	for _, feature := range features {
 
-		data, _ := json.Marshal(feature)
+		data, _ := json.Marshal(feature.Properties)
 		g := wkt.MarshalString(feature.Geometry)
 		err := d.db.QueryRow(insert, g, data).Scan(&feature.ID)
 		if err != nil {
@@ -41,5 +42,30 @@ func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool
 
 //gets features based on query
 func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
-	return nil, nil
+	qry := fmt.Sprintf("SELECT _fid, geom, json FROM %s", request.CollectionName)
+	rows, err := d.db.Query(qry)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	feats := make([]*ogc.Feature, 0)
+	for rows.Next() {
+		var id string
+		var b []byte
+		var jsonStr string
+		err := rows.Scan(&id, &b, &jsonStr)
+		if err != nil {
+			return nil, err
+		}
+		f := &ogc.Feature{ID: id}
+		f.Geometry = wkb.Scanner(b).Geometry
+		err = json.Unmarshal([]byte(jsonStr), &f.Properties)
+		if err != nil {
+			return nil, err
+		}
+		f.ID = id
+		f.Type = "Point"
+		feats = append(feats, f)
+	}
+	return feats, nil
 }
