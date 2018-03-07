@@ -45,7 +45,7 @@ func (f *Feature) MarshalJSON() ([]byte, error) {
 	p, _ := json.Marshal(f.Properties)
 	b = append(b, p...)
 	b = append(b, `,"geometry":`...)
-	g, err := json.Marshal(f.Geometry)
+	g, err := geojson.NewGeometry(f.Geometry).MarshalJSON()
 	if err != nil {
 		return nil, err
 	}
