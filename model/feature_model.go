@@ -7,8 +7,6 @@ import (
 
 	"github.com/paulmach/orb/encoding/wkb"
 
-	"github.com/paulmach/orb"
-
 	"strconv"
 
 	"github.com/boundlessgeo/wt/ogc"
@@ -56,14 +54,14 @@ func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) 
 	feats := make([]*ogc.Feature, 0)
 	for rows.Next() {
 		var id string
-		var g orb.Point
+		sc := wkb.Scanner(nil)
 		var jsonStr string
-		err := rows.Scan(&id, wkb.Scanner(&g), &jsonStr)
+		err := rows.Scan(&id, &sc, &jsonStr)
 		if err != nil {
 			return nil, err
 		}
 		f := &ogc.Feature{ID: id}
-		f.Geometry = g
+		f.Geometry = sc.Geometry
 		err = json.Unmarshal([]byte(jsonStr), &f.Properties)
 		if err != nil {
 			return nil, err
