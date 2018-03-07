@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/boundlessgeo/wt/ogc"
-	"github.com/paulmach/orb/encoding/wkb"
+	"github.com/paulmach/orb/encoding/wkt"
 )
 
 //creates a feature table based
@@ -24,13 +24,13 @@ func (d *DB) CreateCollectionTable(collectionName string, features []*ogc.Featur
 
 func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool, error) {
 
-	insert := fmt.Sprintf("INSERT INTO %s (geom, json) VALUES($1, $2) RETURNING _fid as ID", collectionName)
+	insert := fmt.Sprintf("INSERT INTO %s (geom, json) VALUES(ST_GeomFromText($1,4326), $2) RETURNING _fid as ID", collectionName)
 
 	for _, feature := range features {
 
 		data, _ := json.Marshal(feature)
-		geom := wkb.Value(feature.Geometry)
-		err := d.db.QueryRow(insert, geom, data).Scan(&feature.ID)
+		g := wkt.MarshalString(feature.Geometry)
+		err := d.db.QueryRow(insert, g, data).Scan(&feature.ID)
 		if err != nil {
 			log.Printf("Error creating feature: %v", err)
 			return false, err
