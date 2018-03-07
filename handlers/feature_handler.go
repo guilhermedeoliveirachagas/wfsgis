@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/boundlessgeo/wt/model"
@@ -43,11 +44,11 @@ func createFeature(db *model.DB) func(*gin.Context) {
 		var fc ogc.FeatureCollection
 		data, _ := ioutil.ReadAll(c.Request.Body)
 		err := json.Unmarshal(data, &fc)
-
-		//if inputErr := c.BindJSON(&fc); inputErr != nil {
-		//	c.JSON(http.StatusBadRequest, inputErr.Error)
-		//	return
-		//}
+		if err != nil {
+			log.Println(err.Error())
+			c.JSON(http.StatusInternalServerError, ogc.Exception{Code: "500", Description: "Error inserting feature"})
+			return
+		}
 
 		_, err = db.InsertFeature(collectionName, fc.Features)
 		if err != nil {

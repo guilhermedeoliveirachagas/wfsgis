@@ -4,7 +4,6 @@ package ogc
 type FeatureCollection struct {
 	Type     string     `json:"type"`
 	Features []*Feature `json:"features"`
-	Links    []*Link    `json:"links,omitempty"`
 }
 
 func NewFeatureCollection() *FeatureCollection {

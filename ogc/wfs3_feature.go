@@ -10,7 +10,26 @@ type Feature struct {
 	Type       string             `json:"type"`
 	Geometry   orb.Geometry       `json:"geometry"`
 	Properties geojson.Properties `json:"properties"`
-	Links      []*Link            `json:"links,omitempty"`
+}
+
+func (f *Feature) UnmarshalJSON(b []byte) error {
+
+	var fg *geojson.Feature
+	fg, err := geojson.UnmarshalFeature(b)
+	if err != nil {
+		return err
+	}
+
+	f.Geometry = fg.Geometry
+	if fg.ID == nil {
+		f.ID = ""
+	} else {
+		f.ID = fg.ID.(string)
+	}
+	f.Properties = fg.Properties
+	f.Type = fg.Type
+
+	return nil
 }
 
 func NewFeature(geometry orb.Geometry) *Feature {
