@@ -1,14 +1,14 @@
 package handlers
 
 import (
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/boundlessgeo/wt/model"
 	"github.com/boundlessgeo/wt/ogc"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"encoding/json"
-	"io/ioutil"
 )
-
 
 type FeatureHandler struct {
 	Store *model.DB
@@ -26,23 +26,23 @@ func (h *HTTPServer) makeFeatureHandlers(d *model.DB) {
 
 /**
 Updates a feature
- */
-func updateFeature(db *model.DB) func(*gin.Context){
-	return func(c *gin.Context){
-
+*/
+func updateFeature(db *model.DB) func(*gin.Context) {
+	return func(c *gin.Context) {
 
 	}
 }
+
 /**
 Creates a feature
- */
-func createFeature(db *model.DB) func(*gin.Context){
+*/
+func createFeature(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		collectionName := c.Param("collid")
 
-		var fc *ogc.FeatureCollection
-		data,_ := ioutil.ReadAll(c.Request.Body)
-		err := json.Unmarshal(data,fc)
+		var fc ogc.FeatureCollection
+		data, _ := ioutil.ReadAll(c.Request.Body)
+		err := json.Unmarshal(data, &fc)
 
 		//if inputErr := c.BindJSON(&fc); inputErr != nil {
 		//	c.JSON(http.StatusBadRequest, inputErr.Error)
@@ -51,26 +51,29 @@ func createFeature(db *model.DB) func(*gin.Context){
 
 		_, err = db.InsertFeature(collectionName, fc.Features)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, ogc.Exception{Code:"500", Description: "Error inserting feature"})
+			c.JSON(http.StatusInternalServerError, ogc.Exception{Code: "500", Description: "Error inserting feature"})
 		}
 		c.JSON(http.StatusCreated, fc)
 	}
 }
+
 /**
 Deletes a feature
- */
-func deleteFeature(db *model.DB) func(*gin.Context){
+*/
+func deleteFeature(db *model.DB) func(*gin.Context) {
 	return nil
 }
+
 /**
 Gets a feature by id
- */
-func getFeatureById(db *model.DB) func(*gin.Context){
+*/
+func getFeatureById(db *model.DB) func(*gin.Context) {
 	return nil
 }
+
 /**
 Gets features
- */
+*/
 func getFeatures(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		//collectionName := c.Param("collid")
@@ -88,5 +91,3 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 
 	}
 }
-
-

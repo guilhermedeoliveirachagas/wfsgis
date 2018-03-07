@@ -1,11 +1,12 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
-	"encoding/json"
-	"github.com/paulmach/orb/encoding/wkb"
+
 	"github.com/boundlessgeo/wt/ogc"
+	"github.com/paulmach/orb/encoding/wkb"
 )
 
 //creates a feature table based
@@ -21,20 +22,20 @@ func (d *DB) CreateCollectionTable(collectionName string, features []*ogc.Featur
 
 }
 
-func(d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool, error){
+func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool, error) {
 
-	insert := fmt.Sprintf("INSERT INTO %s (geom, json) VALUES($1, $2) RETURNING _fid as ID",collectionName)
+	insert := fmt.Sprintf("INSERT INTO %s (geom, json) VALUES($1, $2) RETURNING _fid as ID", collectionName)
 
-	for _,feature := range features{
+	for _, feature := range features {
 
 		data, _ := json.Marshal(feature)
-		geom :=  wkb.Value(feature.Geometry)
-		err := d.db.QueryRow(insert,geom,data).Scan(&feature.ID)
+		geom := wkb.Value(feature.Geometry)
+		err := d.db.QueryRow(insert, geom, data).Scan(&feature.ID)
 		if err != nil {
-			log.Printf("Error creating feature: %v",err)
+			log.Printf("Error creating feature: %v", err)
 			return false, err
 		}
-		}
+	}
 	return true, nil
 }
 
