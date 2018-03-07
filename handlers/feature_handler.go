@@ -62,7 +62,15 @@ func createFeature(db *model.DB) func(*gin.Context) {
 Deletes a feature
 */
 func deleteFeature(db *model.DB) func(*gin.Context) {
-	return nil
+	return func(c *gin.Context){
+		collid := c.Param("collid")
+		itemid := c.Param("itemid")
+		if err := db.DeleteItem(collid,itemid); err != nil{
+			c.JSON(http.StatusInternalServerError, gin.H{"success":"false"})
+		} else {
+			c.JSON(http.StatusOK, gin.H{"success": "true"})
+		}
+	}
 }
 
 /**
