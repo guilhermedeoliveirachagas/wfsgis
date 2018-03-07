@@ -77,13 +77,13 @@ func deleteFeature(db *model.DB) func(*gin.Context) {
 Gets a feature by id
 */
 func getFeatureById(db *model.DB) func(*gin.Context) {
-	return func(c *gin.Context){
+	return func(c *gin.Context) {
 		collid := c.Param("collid")
 		itemid := c.Param("itemid")
-		if item, err := db.GetItem(collid,itemid); err != nil{
-			c.JSON(http.StatusInternalServerError, gin.H{"success":"false"})
+		if item, err := db.GetItem(collid, itemid); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"success": "false"})
 		} else {
-			c.JSON(http.StatusOK,item)
+			c.JSON(http.StatusOK, item)
 		}
 	}
 }

@@ -83,4 +83,3 @@ func (d *DB) createCollectionInfoTable() error {
 	}
 	return nil
 }
-

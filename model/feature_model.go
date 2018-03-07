@@ -94,7 +94,7 @@ func (d *DB) DeleteItem(collectionId string, itemId string) error {
 /*
 Get Item by Id
  */
-func (d *DB) GetItem(collectionId string, itemId string)(*ogc.FeatureCollection,error){
+func (d *DB) GetItem(collectionId string, itemId string) (*ogc.FeatureCollection, error) {
 
 	//item id needs to be an int
 	numberId, _ := strconv.Atoi(itemId)
@@ -104,7 +104,7 @@ func (d *DB) GetItem(collectionId string, itemId string)(*ogc.FeatureCollection,
 	var id int
 	var g orb.Point
 	var jsonStr string
-	err :=d.db.QueryRow(get,numberId).Scan(&id,wkb.Scanner(&g),&jsonStr)
+	err := d.db.QueryRow(get, numberId).Scan(&id, wkb.Scanner(&g), &jsonStr)
 	if err != nil {
 		return nil, err
 	}
@@ -118,9 +118,8 @@ func (d *DB) GetItem(collectionId string, itemId string)(*ogc.FeatureCollection,
 	f.Type = "Point"
 
 	fc := ogc.NewFeatureCollection()
-	fc.Features = append(fc.Features,f)
+	fc.Features = append(fc.Features, f)
 
-	return fc,err
-
+	return fc, err
 
 }
