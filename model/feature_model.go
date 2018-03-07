@@ -11,6 +11,7 @@ import (
 
 	"github.com/boundlessgeo/wt/ogc"
 	"github.com/paulmach/orb/encoding/wkt"
+	"github.com/paulmach/orb"
 )
 
 //creates a feature table based

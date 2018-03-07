@@ -83,7 +83,7 @@ func getFeatureById(db *model.DB) func(*gin.Context) {
 		if item, err := db.GetItem(collid,itemid); err != nil{
 			c.JSON(http.StatusInternalServerError, gin.H{"success":"false"})
 		} else {
-			c.JSON(http.StatusOK, gin.H{"success": "true"})
+			c.JSON(http.StatusOK,item)
 		}
 	}
 }
