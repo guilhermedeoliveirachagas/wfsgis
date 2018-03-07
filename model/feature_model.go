@@ -7,6 +7,7 @@ import (
 
 	"github.com/boundlessgeo/wt/ogc"
 	"github.com/paulmach/orb/encoding/wkt"
+	"strconv"
 )
 
 //creates a feature table based
@@ -42,4 +43,21 @@ func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool
 //gets features based on query
 func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
 	return nil, nil
+}
+/*
+Delete a feature
+ */
+func (d *DB) DeleteItem(collectionId string, itemId string)(error){
+
+	//item id needs to be an int
+	numberId, _ := strconv.Atoi(itemId)
+
+	delete := fmt.Sprintf("DELETE from %s WHERE _fid = $1", collectionId)
+	_,err :=d.db.Exec(delete,numberId)
+	if err != nil{
+		log.Printf("Error deleting item: %v",err)
+	}
+	return err
+
+
 }
