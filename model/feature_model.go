@@ -5,10 +5,14 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/boundlessgeo/wt/ogc"
 	"github.com/paulmach/orb/encoding/wkb"
-	"github.com/paulmach/orb/encoding/wkt"
+
+	"github.com/paulmach/orb"
+
 	"strconv"
+
+	"github.com/boundlessgeo/wt/ogc"
+	"github.com/paulmach/orb/encoding/wkt"
 )
 
 //creates a feature table based
@@ -43,7 +47,7 @@ func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool
 
 //gets features based on query
 func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
-	qry := fmt.Sprintf("SELECT _fid, geom, json FROM %s", request.CollectionName)
+	qry := fmt.Sprintf("SELECT _fid, ST_AsBinary(geom), json FROM %s", request.CollectionName)
 	rows, err := d.db.Query(qry)
 	if err != nil {
 		return nil, err
@@ -52,14 +56,14 @@ func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) 
 	feats := make([]*ogc.Feature, 0)
 	for rows.Next() {
 		var id string
-		var b []byte
+		var g orb.Point
 		var jsonStr string
-		err := rows.Scan(&id, &b, &jsonStr)
+		err := rows.Scan(&id, wkb.Scanner(&g), &jsonStr)
 		if err != nil {
 			return nil, err
 		}
 		f := &ogc.Feature{ID: id}
-		f.Geometry = wkb.Scanner(b).Geometry
+		f.Geometry = g
 		err = json.Unmarshal([]byte(jsonStr), &f.Properties)
 		if err != nil {
 			return nil, err
@@ -70,20 +74,20 @@ func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) 
 	}
 	return feats, nil
 }
+
 /*
 Delete a feature
- */
-func (d *DB) DeleteItem(collectionId string, itemId string)(error){
+*/
+func (d *DB) DeleteItem(collectionId string, itemId string) error {
 
 	//item id needs to be an int
 	numberId, _ := strconv.Atoi(itemId)
 
 	delete := fmt.Sprintf("DELETE from %s WHERE _fid = $1", collectionId)
-	_,err :=d.db.Exec(delete,numberId)
-	if err != nil{
-		log.Printf("Error deleting item: %v",err)
+	_, err := d.db.Exec(delete, numberId)
+	if err != nil {
+		log.Printf("Error deleting item: %v", err)
 	}
 	return err
-
 
 }
