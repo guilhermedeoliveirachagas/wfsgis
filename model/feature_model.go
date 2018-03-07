@@ -4,6 +4,9 @@ import (
 	"github.com/boundlessgeo/wt/ogc"
 	"fmt"
 	"log"
+	"encoding/json"
+	"github.com/paulmach/orb/encoding/wkb"
+
 )
 
 //creates a feature table based
@@ -15,30 +18,25 @@ func(d *DB) CreateCollectionTable(collectionName string, features []*ogc.Feature
 		log.Printf("Error creating table: %v",err)
 		return err
 	}
-
-	//makeGeom := "SELECT ST_AddGeometryColumn('public',$1,'geom',4326,'POINT',2)"
-	//_, err = d.db.Exec(makeGeom,collectionName)
-	//if err != nil {
-	//	log.Printf("Error adding geometry column: %v",err)
-	//	return err
-	//}
 	return nil
 
 }
 
-func(d *DB) InsertFeature(collectionName string, features []*ogc.Feature){
+func(d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool, error){
 
-	//insert := "INSERT INTO $1 (geom, json) VALUES($2, $3)"
-	//
-	//for _,feature := range features{
-	//
-	//	json, _ := json2.Marshal(feature)
-	//	orb.AllGeometries.
+	insert := fmt.Sprintf("INSERT INTO %s (geom, json) VALUES($1, $2) RETURNING _fid as ID",collectionName)
 
+	for _,feature := range features{
 
-	//	}
-
-
+		data, _ := json.Marshal(feature)
+		geom :=  wkb.Value(feature.Geometry)
+		err := d.db.QueryRow(insert,geom,data).Scan(&feature.ID)
+		if err != nil {
+			log.Printf("Error creating feature: %v",err)
+			return false, err
+		}
+		}
+	return true, nil
 }
 
 //gets features based on query

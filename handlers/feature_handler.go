@@ -4,6 +4,9 @@ import (
 	"github.com/boundlessgeo/wt/model"
 	"github.com/boundlessgeo/wt/ogc"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"encoding/json"
+	"io/ioutil"
 )
 
 
@@ -34,12 +37,23 @@ func updateFeature(db *model.DB) func(*gin.Context){
 Creates a feature
  */
 func createFeature(db *model.DB) func(*gin.Context){
-	return func(c *gin.Context){
-		//collectionName := c.Param("collid")
-		//fc := &ogc.FeatureCollection{}
-		//data, _ := ioutil.ReadAll(c.Request.Body)
-		//json.Unmarshal(data, fc)
-		//db.CreateCollectionTable(collectionName, fc.Features)
+	return func(c *gin.Context) {
+		collectionName := c.Param("collid")
+
+		var fc *ogc.FeatureCollection
+		data,_ := ioutil.ReadAll(c.Request.Body)
+		err := json.Unmarshal(data,fc)
+
+		//if inputErr := c.BindJSON(&fc); inputErr != nil {
+		//	c.JSON(http.StatusBadRequest, inputErr.Error)
+		//	return
+		//}
+
+		_, err = db.InsertFeature(collectionName, fc.Features)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, ogc.Exception{Code:"500", Description: "Error inserting feature"})
+		}
+		c.JSON(http.StatusCreated, fc)
 	}
 }
 /**
@@ -59,16 +73,16 @@ Gets features
  */
 func getFeatures(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		collectionName := c.Param("collid")
-		getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
-		features, err := db.GetFeatures(getFeature)
-		if err != nil{
-
-			c.JSON(500, ogc.Exception{"500","Error fetching features"})
-		}
+		//collectionName := c.Param("collid")
+		//getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
+		//features, err := db.GetFeatures(getFeature)
+		//if err != nil{
+		//
+		//	c.JSON(500, ogc.Exception{"500","Error fetching features"})
+		//}
 
 		fc := ogc.NewFeatureCollection()
-		fc.Features = features
+		//fc.Features = features
 		fc.Type = "FeatureCollection"
 		c.JSON(200, fc)
 
@@ -76,24 +90,3 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 }
 
 
-
-func (fh *FeatureHandler) Handle(c *gin.Context) {
-
-	switch c.Request.Method {
-	case "GET":
-		{
-
-
-		}
-	case "POST":
-		{
-
-		}
-
-	default:
-		{
-			c.JSON(405, ogc.Exception{"405", "Method not allowed"})
-		}
-	}
-
-}
