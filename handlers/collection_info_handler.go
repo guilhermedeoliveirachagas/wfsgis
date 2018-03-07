@@ -65,9 +65,15 @@ func createCollectionInfo(db *model.DB) func(*gin.Context) {
 		collDB := &model.CollectionInfoDB{CollectionInfo: coll}
 		err := db.AddCollection(collDB)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error)
+			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
+		err = db.CreateCollectionTable(coll.Name, nil)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		c.JSON(http.StatusCreated, gin.H{"result": "success"})
 	}
 }
