@@ -1,18 +1,19 @@
 package model
 
 import (
-	"github.com/boundlessgeo/wt/ogc"
 	"fmt"
 	"log"
+
+	"github.com/boundlessgeo/wt/ogc"
 )
 
 //creates a feature table based
-func(d *DB) CreateCollectionTable(collectionName string, features []*ogc.Feature) error{
+func (d *DB) CreateCollectionTable(collectionName string, features []*ogc.Feature) error {
 
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL UNIQUE, geom geometry(Point,4326),json JSONB)",collectionName)
+	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL UNIQUE, geom geometry(Point,4326),json JSONB)", collectionName)
 	_, err := d.db.Exec(sql)
 	if err != nil {
-		log.Printf("Error creating table: %v",err)
+		log.Printf("Error creating table: %v", err)
 		return err
 	}
 
@@ -26,7 +27,7 @@ func(d *DB) CreateCollectionTable(collectionName string, features []*ogc.Feature
 
 }
 
-func(d *DB) InsertFeature(collectionName string, features []*ogc.Feature){
+func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) {
 
 	//insert := "INSERT INTO $1 (geom, json) VALUES($2, $3)"
 	//
@@ -35,13 +36,11 @@ func(d *DB) InsertFeature(collectionName string, features []*ogc.Feature){
 	//	json, _ := json2.Marshal(feature)
 	//	orb.AllGeometries.
 
-
 	//	}
-
 
 }
 
 //gets features based on query
-func(d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
+func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
 	return nil, nil
 }
