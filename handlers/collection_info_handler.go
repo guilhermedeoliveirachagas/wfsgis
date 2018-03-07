@@ -47,7 +47,7 @@ func getCollectionsInfo(db *model.DB) func(*gin.Context) {
 
 func getCollectionInfo(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		collInfo := db.FindCollection(c.Param(":collid"))
+		collInfo := db.FindCollection(c.Param("collid"))
 		c.JSON(http.StatusOK, gin.H{"result": collInfo})
 	}
 }
