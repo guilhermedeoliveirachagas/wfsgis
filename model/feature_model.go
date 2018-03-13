@@ -9,9 +9,9 @@ import (
 
 	"strconv"
 
-	"github.com/boundlessgeo/wt/ogc"
-	"github.com/paulmach/orb/encoding/wkt"
+	"github.com/boundlessgeo/wfs3/ogc"
 	"github.com/paulmach/orb"
+	"github.com/paulmach/orb/encoding/wkt"
 )
 
 //creates a feature table based
@@ -93,7 +93,7 @@ func (d *DB) DeleteItem(collectionId string, itemId string) error {
 
 /*
 Get Item by Id
- */
+*/
 func (d *DB) GetItem(collectionId string, itemId string) (*ogc.FeatureCollection, error) {
 
 	//item id needs to be an int
