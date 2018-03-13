@@ -1,4 +1,4 @@
-package handlers
+package http
 
 import (
 	"context"
@@ -6,10 +6,13 @@ import (
 	"net/http"
 	"time"
 
+	_ "github.com/boundlessgeo/wt/handlers"
 	"github.com/boundlessgeo/wt/model"
 	"github.com/gin-gonic/gin"
 )
 
+//HTTPServer holds references to the Server and the router.
+//This can be used to provide a lifecycle for the web server
 type HTTPServer struct {
 	server *http.Server
 	router *gin.Engine
@@ -22,14 +25,9 @@ func NewHTTPServer(d *model.DB) *HTTPServer {
 		Handler: router,
 	}, router: router}
 
-	httpServer.makeConformanceHandlers()
-	httpServer.makeCollectionHandlers(d)
-	httpServer.makeFeatureHandlers(d)
-
-	// h.router.GET("/collections/:collid/schema", getCollectionInfo(d))
-	// h.router.PUT("/collections/:collid/schema", updateCollectionInfo())
-	// h.router.POST("/collections", createCollectionInfo(d))
-	// h.router.DELETE("/collections/:collid", deleteCollection())
+	httpServer.MakeConformanceHandlers()
+	httpServer.MakeCollectionHandlers(d)
+	httpServer.MakeFeatureHandlers(d)
 
 	return httpServer
 }

@@ -2,13 +2,10 @@
 
 
 [[projects]]
-  branch = "master"
-  name = "github.com/boundlessgeo/feshack"
-  packages = [
-    "handlers",
-    "ogc"
-  ]
-  revision = "d4865e10b078ddb5d56fe7e2f70fb0914067aba4"
+  name = "github.com/aws/aws-lambda-go"
+  packages = ["events","lambda","lambda/messages","lambdacontext"]
+  revision = "fafa7e49388b8991caf99308e80655ba91816b72"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -18,11 +15,7 @@
 
 [[projects]]
   name = "github.com/gin-gonic/gin"
-  packages = [
-    ".",
-    "binding",
-    "render"
-  ]
+  packages = [".","binding","render"]
   revision = "d459835d2b077e44f7c9b453505ee29881d5d12d"
   version = "v1.2"
 
@@ -35,10 +28,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/lib/pq"
-  packages = [
-    ".",
-    "oid"
-  ]
+  packages = [".","oid"]
   revision = "88edab0803230a3898347e77b474f8c1820a1f20"
 
 [[projects]]
@@ -50,10 +40,7 @@
 [[projects]]
   branch = "master"
   name = "github.com/paulmach/orb"
-  packages = [
-    ".",
-    "geojson"
-  ]
+  packages = [".","encoding/wkb","encoding/wkt","geojson"]
   revision = "1f34bf6ee9935efca353b8cc0e06396d347cf836"
 
 [[projects]]
@@ -83,6 +70,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a15aa481025d5f216311cdb0051de6879a0a7d0cf9fe078dec74437c97f17875"
+  inputs-digest = "cd6e1fc3248597ed8b37f8b54fd0e81d8717db441a3dfe810b670fd63bd1c664"
   solver-name = "gps-cdcl"
   solver-version = 1

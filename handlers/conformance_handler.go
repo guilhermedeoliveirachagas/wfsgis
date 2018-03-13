@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *HTTPServer) makeConformanceHandlers() {
+func (h *HTTPServer) MakeConformanceHandlers() {
 
 	conformance := ogc.NewConformance()
 

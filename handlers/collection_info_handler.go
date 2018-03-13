@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *HTTPServer) makeCollectionHandlers(d *model.DB) {
+func (h *HTTPServer) MakeCollectionHandlers(d *model.DB) {
 	h.router.GET("/collections", getCollectionsInfo(d))
 	h.router.GET("/collections/:collid/schema", getCollectionInfo(d))
 	h.router.PUT("/collections/:collid/schema", updateCollectionInfo(d))

@@ -15,14 +15,12 @@ type FeatureHandler struct {
 	Store *model.DB
 }
 
-func (h *HTTPServer) makeFeatureHandlers(d *model.DB) {
-
+func (h *HTTPServer) MakeFeatureHandlers(d *model.DB) {
 	h.router.GET("/collections/:collid/items", getFeatures(d))
 	h.router.GET("/collections/:collid/items/:itemid", getFeatureById(d))
 	h.router.POST("/collections/:collid/items", createFeature(d))
 	h.router.PUT("/collections/:collid/items/:fid", updateFeature(d))
 	h.router.DELETE("/collections/:collid/items/:fid", deleteFeature(d))
-
 }
 
 /**
@@ -46,7 +44,8 @@ func createFeature(db *model.DB) func(*gin.Context) {
 		err := json.Unmarshal(data, &fc)
 		if err != nil {
 			log.Println(err.Error())
-			c.JSON(http.StatusInternalServerError, ogc.Exception{Code: "500", Description: "Error inserting feature"})
+			c.JSON(http.StatusInternalServerError, ogc.Exception{Code: "500",
+				Description: "Error inserting feature"})
 			return
 		}
 
@@ -108,5 +107,4 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 		}
 		c.JSON(http.StatusOK, gin.H{"type": "FeatureCollection", "features": fc})
 	}
-
 }
