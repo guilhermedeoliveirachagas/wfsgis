@@ -6,8 +6,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/boundlessgeo/wt/handlers"
-	"github.com/boundlessgeo/wt/model"
+	"github.com/boundlessgeo/wfs3/handlers"
+	"github.com/boundlessgeo/wfs3/model"
 )
 
 func main() {

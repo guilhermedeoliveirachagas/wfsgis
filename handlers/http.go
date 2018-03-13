@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/boundlessgeo/wt/model"
+	"github.com/boundlessgeo/wfs3/model"
 	"github.com/gin-gonic/gin"
 )
 

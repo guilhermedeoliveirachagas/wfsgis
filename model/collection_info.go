@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/boundlessgeo/wt/ogc"
+	"github.com/boundlessgeo/wfs3/ogc"
 	"github.com/lib/pq"
 )
 

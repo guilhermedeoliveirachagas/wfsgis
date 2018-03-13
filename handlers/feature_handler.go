@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/boundlessgeo/wt/model"
-	"github.com/boundlessgeo/wt/ogc"
+	"github.com/boundlessgeo/wfs3/model"
+	"github.com/boundlessgeo/wfs3/ogc"
 	"github.com/gin-gonic/gin"
 )
 
