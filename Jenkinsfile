@@ -20,11 +20,10 @@ node {
         sh """
           docker run -v \$(pwd -P):/go/src/github.com/boundlessgeo/wfs3 \
                      -w /code golang:1.9.2-alpine3.7 sh \
-                     -c 'apk add --no-cache build-base bash dep && \
-                        bash -c "go get -u github.com/golang/dep/cmd/dep" && \
-                        bash -c "dep ensure" && \
-                        bash -c "go build -o /code/target/wfs3 github.com/boundlessgeo/wfs3"'
-          """
+                     -c 'apk add --no-cache git build-base bash && \
+                         bash -c "go get -u github.com/golang/dep/cmd/dep" && \
+                         bash -c "cd /go/src/github.com/boundlessgeo/wfs3; dep ensure; go build -ldflags -v -o /code/target/wfs3"'
+           """
       }
 
     }
@@ -64,3 +63,4 @@ def notifyBuild(String buildStatus = currentBuild.result) {
   // Send notifications
   slackSend (color: colorCode, message: summary, channel: '#cto-svc-bots')
 }
+
