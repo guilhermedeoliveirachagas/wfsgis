@@ -15,14 +15,21 @@ node {
           echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
       }
 
-      stage('Package'){
+      stage('Deploy'){
         // make build
         sh """
           docker run -v \$(pwd -P):/go/src/github.com/boundlessgeo/wfs3 \
                      -w /code golang:1.9.2-alpine3.7 sh \
-                     -c 'apk add --no-cache git build-base bash && \
+                     -c 'apk add --no-cache git build-base bash zip && \
                          bash -c "go get -u github.com/golang/dep/cmd/dep" && \
-                         bash -c "cd /go/src/github.com/boundlessgeo/wfs3; dep ensure; go build -ldflags -v -o /code/target/wfs3"'
+                         bash -c "cd /go/src/github.com/boundlessgeo/wfs3; \
+												 dep ensure; \
+												 go build -ldflags -v -o /code/target/wfs3" && \
+												 bash -c "zip deployment.zip /code/target/wfs3" && \
+												 bash -c "aws lambda update-function-code \
+												              --region us-east-1
+																			--function-name wfs3
+																			--zip-file fileb://./deployment.zip"'
            """
       }
 
