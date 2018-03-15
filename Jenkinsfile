@@ -7,8 +7,8 @@
 node {
   withCredentials([string(credentialsId: 'boundlessgeoadmin-token', variable: 'GITHUB_TOKEN'),
                    string(credentialsId: 'sonar-jenkins-pipeline-token', variable: 'SONAR_TOKEN')
-                   string(credentialsId: 'aws-access-key-id', variable:'AWS_ACCESS_KEY_ID')
-                   string(credentialsId: 'aws-access-secret-key', variable:'AWS_SECRET_ACCESS_KEY')]) {
+                   string(credentialsId: 'AWS_ACCESS_KEY_ID', variable:'AWS_ACCESS_KEY_ID')
+                   string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable:'AWS_SECRET_ACCESS_KEY')]) {
 
     currentBuild.result = "SUCCESS"
 
@@ -29,8 +29,8 @@ node {
 												 dep ensure; \
 												 go build -ldflags -v -o /code/target/wfs3" && \
 												 bash -c "zip deployment.zip /code/target/wfs3" && \
-                         bash -c "AWS_ACCESS_KEY_ID=${env.AWS_SECRET_KEY}"
-												 bash -c "AWS_SECRET_ACCESS_KEY=${env.AWS_SECRET_ACCESS_KEY}"
+                         bash -c "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}"
+												 bash -c "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
                          bash -c "aws lambda update-function-code \
 												              --region us-east-1
 																			--function-name wfs3
