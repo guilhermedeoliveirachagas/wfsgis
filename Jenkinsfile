@@ -6,9 +6,7 @@
 
 node {
   withCredentials([string(credentialsId: 'boundlessgeoadmin-token', variable: 'GITHUB_TOKEN'),
-                   string(credentialsId: 'sonar-jenkins-pipeline-token', variable: 'SONAR_TOKEN')
-                   string(credentialsId: 'AWS_ACCESS_KEY_ID', variable:'AWS_ACCESS_KEY_ID')
-                   string(credentialsId: 'AWS_SECRET_ACCESS_KEY', variable:'AWS_SECRET_ACCESS_KEY')]) {
+                   string(credentialsId: 'sonar-jenkins-pipeline-token', variable: 'SONAR_TOKEN')]) {
 
     currentBuild.result = "SUCCESS"
 
