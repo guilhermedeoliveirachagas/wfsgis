@@ -20,7 +20,7 @@ node {
         // make build
         sh """
           docker run -v \$(pwd -P):/go/src/github.com/boundlessgeo/wfs3 \
-                     -w /code golang:1.9.2-alpine3.7 sh \
+                     -w /code quay.io/boundlessgeo/alpine-go-aws:1.9.3 sh \
                      -c 'apk add --no-cache git build-base bash zip && \
                          bash -c "go get -u github.com/golang/dep/cmd/dep" && \
                          bash -c "cd /go/src/github.com/boundlessgeo/wfs3; \
