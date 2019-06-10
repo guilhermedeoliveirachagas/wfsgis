@@ -1,16 +1,32 @@
-version: '2'
+version: '3.7'
+
 volumes:
   pg-data:
     driver: local
+
 services:
+  wfs3:
+    image: boundlessgeo/wfs3
+    restart: always
+    build: .
+    links:
+      - db
+    depends_on:
+      - db
+    ports: 
+      - 8080:8080
+    environment:
+      - POSTGRES_HOST=db
+
   db:
     container_name: db
     build: ./docker/postgis
     image: wfsthree/postgis:latest
-#    volumes:
-#      - pg-data:/var/lib/postgresql/data
+    volumes:
+      - pg-data:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - 5432:5432
+
   web:
     container_name: web  # optional
     restart: always  # optional

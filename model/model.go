@@ -3,8 +3,9 @@ package model
 import (
 	"database/sql"
 	"fmt"
-	_ "github.com/lib/pq"
 	"log"
+
+	_ "github.com/lib/pq"
 )
 
 //DB holds the DB connection
@@ -14,15 +15,15 @@ type DB struct {
 }
 
 //NewDB instantiates the DB struct using the injected config
-func NewDB(dbname, user, pass string, sslMode bool) *DB {
+func NewDB(dbname, user, pass string, sslMode bool, host string, port string) *DB {
 	var mode string
 	if sslMode {
 		mode = "enable"
 	} else {
 		mode = "disable"
 	}
-	connStr := fmt.Sprintf("dbname=%s user=%s password=%s sslmode=%s",
-		dbname, user, pass, mode)
+	connStr := fmt.Sprintf("dbname=%s user=%s password=%s sslmode=%s host=%s port=%s",
+		dbname, user, pass, mode, host, port)
 
 	return &DB{nil, connStr}
 }
