@@ -1,13 +1,25 @@
-FROM golang:1.9.2-alpine3.7
+FROM golang:1.12.3 AS BUILD
 
-ADD ./ /go/src/github.com/boundlessgeo/wfs3
+RUN mkdir /wfs3
+WORKDIR /wfs3
 
-# Build the server command inside the container.
-RUN apk add --no-cache git build-base bash && \
-    go get -u github.com/golang/dep/cmd/dep && \
-    cd /go/src/github.com/boundlessgeo/wfs3; dep ensure; \
-		go install github.com/boundlessgeo/wfs3
+ADD go.mod .
+ADD go.sum .
+RUN go mod download
 
-ENTRYPOINT /go/bin/wfs3
+#now build source code
+ADD . ./
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o /go/bin/wfs3 .
+
+FROM golang:1.12.3
+
+ENV POSTGRES_HOST=localhost
+ENV POSTGRES_PORT=5432
+ENV POSTGRES_DBNAME=wfsthree
+ENV POSTGRES_USERNAME=wfsthree
+ENV POSTGRES_PASSWORD=wfsthree
+
+COPY --from=BUILD /go/bin/* /bin/
+ENTRYPOINT /bin/wfs3
 
 EXPOSE 8080
