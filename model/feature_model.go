@@ -17,7 +17,7 @@ import (
 //creates a feature table based
 func (d *DB) CreateCollectionTable(collectionName string) error {
 
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL UNIQUE, geom geometry, json JSONB)", collectionName)
+	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, timestamp TIMESTAMP NOT NULL, geom geometry NOT NULL, json JSONB)", collectionName)
 	_, err := d.db.Exec(sql)
 	if err != nil {
 		log.Printf("Error creating table: %v", err)
@@ -96,7 +96,6 @@ func (d *DB) DeleteItem(collectionID string, itemID string) error {
 	}
 	log.Printf("Deleted %s/%s successfuly", collectionID, itemID)
 	return nil
-
 }
 
 /*

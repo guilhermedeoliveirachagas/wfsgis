@@ -99,15 +99,16 @@ Gets features
 */
 func getFeatures(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		//collectionName := c.Param("collid")
-		//getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
+		collectionName := c.Param("collid")
+
+		getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
 		//features, err := db.GetFeatures(getFeature)
 		//if err != nil{
 		//
 		//	c.JSON(500, ogc.Exception{"500","Error fetching features"})
 		//}
 
-		fc, err := db.GetFeatures(ogc.GetFeatureRequest{CollectionName: c.Param("collid")})
+		fc, err := db.GetFeatures(ogc.GetFeatureRequest{CollectionName: collectionName})
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
