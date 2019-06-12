@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/paulmach/orb/encoding/wkb"
 
@@ -17,7 +18,7 @@ import (
 //creates a feature table based
 func (d *DB) CreateCollectionTable(collectionName string) error {
 
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, timestamp TIMESTAMP NOT NULL, geom geometry NOT NULL, json JSONB)", collectionName)
+	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, datetime TIMESTAMP NOT NULL, geom geometry NOT NULL, json JSONB NOT NULL)", collectionName)
 	_, err := d.db.Exec(sql)
 	if err != nil {
 		log.Printf("Error creating table: %v", err)
@@ -27,14 +28,14 @@ func (d *DB) CreateCollectionTable(collectionName string) error {
 
 }
 
-func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool, error) {
+func (d *DB) InsertFeature(collectionName string, datetime time.Time, features []*ogc.Feature) (bool, error) {
 
-	insert := fmt.Sprintf("INSERT INTO %s (geom, json) VALUES(ST_GeomFromText($1,4326), $2) RETURNING _fid as ID", collectionName)
+	insert := fmt.Sprintf("INSERT INTO %s (datetime, geom, json) VALUES($1, ST_GeomFromText($2,4326), $3) RETURNING _fid as ID", collectionName)
 
 	for _, feature := range features {
 		data, _ := json.Marshal(feature.Properties)
 		g := wkt.MarshalString(feature.Geometry)
-		err := d.db.QueryRow(insert, g, data).Scan(&feature.ID)
+		err := d.db.QueryRow(insert, datetime, g, data).Scan(&feature.ID)
 		if err != nil {
 			log.Printf("Error creating feature: %v", err)
 			return false, err

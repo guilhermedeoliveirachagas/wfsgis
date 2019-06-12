@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"log"
+	"time"
 	"net/http"
 
 	"github.com/boundlessgeo/wfs3/model"
@@ -55,7 +56,8 @@ func createFeature(db *model.DB) func(*gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "No features found in json body"})
 			return
 		}
-		_, err = db.InsertFeature(collectionName, fc.Features)
+		datetime := time.Now()
+		_, err = db.InsertFeature(collectionName, datetime, fc.Features)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
@@ -101,7 +103,7 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		collectionName := c.Param("collid")
 
-		getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
+		// getFeature := ogc.GetFeatureRequest{Extent: ogc.NewBbox(-180, 90, 180, -90), FeatureId: "", CollectionName: collectionName}
 		//features, err := db.GetFeatures(getFeature)
 		//if err != nil{
 		//
