@@ -49,7 +49,7 @@ func (d *DB) Start() error {
 	d.db = db
 
 	if err = d.createCollectionInfoTable(); err != nil {
-		log.Panic("Error creating collection info table")
+		log.Panic(err.Error())
 	}
 
 	log.Println("Started DB")
@@ -67,20 +67,4 @@ func (d *DB) Stop(err error) {
 	if err = d.db.Close(); err != nil {
 		log.Println(err)
 	}
-}
-
-func (d *DB) createCollectionInfoTable() error {
-	qry := "CREATE TABLE IF NOT EXISTS collection_info (" +
-		"geom_type INTEGER," +
-		"table_name TEXT," +
-		"title TEXT," +
-		"description TEXT," +
-		"links TEXT[]," +
-		"extent NUMERIC[]," +
-		"crs TEXT[])"
-	_, err := d.db.Exec(qry)
-	if err != nil {
-		return err
-	}
-	return nil
 }

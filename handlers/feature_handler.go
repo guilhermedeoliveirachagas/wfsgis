@@ -20,8 +20,8 @@ func (h *HTTPServer) makeFeatureHandlers(d *model.DB) {
 	h.router.GET("/collections/:collid/items", getFeatures(d))
 	h.router.GET("/collections/:collid/items/:itemid", getFeatureById(d))
 	h.router.POST("/collections/:collid/items", createFeature(d))
-	h.router.PUT("/collections/:collid/items/:fid", updateFeature(d))
-	h.router.DELETE("/collections/:collid/items/:fid", deleteFeature(d))
+	h.router.PUT("/collections/:collid/items/:itemid", updateFeature(d))
+	h.router.DELETE("/collections/:collid/items/:itemid", deleteFeature(d))
 
 }
 
@@ -46,13 +46,19 @@ func createFeature(db *model.DB) func(*gin.Context) {
 		err := json.Unmarshal(data, &fc)
 		if err != nil {
 			log.Println(err.Error())
-			c.JSON(http.StatusInternalServerError, ogc.Exception{Code: "500", Description: "Error inserting feature"})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 			return
 		}
 
+		log.Printf("createFeature %v %v", collectionName, fc.Features)
+		if len(fc.Features) == 0 {
+			c.JSON(http.StatusBadRequest, gin.H{"message": "No features found in json body"})
+			return
+		}
 		_, err = db.InsertFeature(collectionName, fc.Features)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, ogc.Exception{Code: "500", Description: "Error inserting feature"})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+			return
 		}
 		c.JSON(http.StatusCreated, fc)
 	}
@@ -66,7 +72,7 @@ func deleteFeature(db *model.DB) func(*gin.Context) {
 		collid := c.Param("collid")
 		itemid := c.Param("itemid")
 		if err := db.DeleteItem(collid, itemid); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"success": "false"})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		} else {
 			c.JSON(http.StatusOK, gin.H{"success": "true"})
 		}
@@ -81,7 +87,7 @@ func getFeatureById(db *model.DB) func(*gin.Context) {
 		collid := c.Param("collid")
 		itemid := c.Param("itemid")
 		if item, err := db.GetItem(collid, itemid); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"success": "false"})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		} else {
 			c.JSON(http.StatusOK, item)
 		}
@@ -103,7 +109,7 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 
 		fc, err := db.GetFeatures(ogc.GetFeatureRequest{CollectionName: c.Param("collid")})
 		if err != nil {
-			c.JSON(http.StatusBadRequest, ogc.Exception{"500", err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
 		c.JSON(http.StatusOK, gin.H{"type": "FeatureCollection", "features": fc})

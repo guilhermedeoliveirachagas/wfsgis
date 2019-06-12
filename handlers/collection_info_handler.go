@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"log"
 
 	"github.com/boundlessgeo/wfs3/model"
 	"github.com/boundlessgeo/wfs3/ogc"
@@ -20,7 +21,7 @@ func (h *HTTPServer) makeCollectionHandlers(d *model.DB) {
 Deletes a collection
 */
 func deleteCollection(db *model.DB) func(*gin.Context) {
-
+	log.Printf("Not implemented yet")
 	return nil
 }
 
@@ -28,6 +29,7 @@ func deleteCollection(db *model.DB) func(*gin.Context) {
 Updates a collection
 */
 func updateCollectionInfo(db *model.DB) func(*gin.Context) {
+	log.Printf("Not implemented yet")
 	return nil
 }
 
@@ -57,23 +59,23 @@ Creates a collection
 */
 func createCollectionInfo(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		var coll *ogc.CollectionInfo
+		var coll ogc.CollectionInfo
 		if inputErr := c.BindJSON(&coll); inputErr != nil {
 			c.JSON(http.StatusBadRequest, inputErr.Error)
 			return
 		}
-		collDB := &model.CollectionInfoDB{CollectionInfo: coll}
-		err := db.AddCollection(collDB)
+		collDB := model.CollectionInfoDB{CollectionInfo: &coll}
+		err := db.AddCollection(&collDB)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
-		err = db.CreateCollectionTable(coll.Name, nil)
+		err = db.CreateCollectionTable(coll.Name)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		c.JSON(http.StatusCreated, gin.H{"result": "success"})
+		c.JSON(http.StatusCreated, "")
 	}
 }

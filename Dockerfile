@@ -9,7 +9,8 @@ RUN go mod download
 
 #now build source code
 ADD . ./
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o /go/bin/wfs3 .
+RUN go build -o /go/bin/wfs3
+# RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o /go/bin/wfs3 .
 
 FROM golang:1.12.3
 
@@ -23,3 +24,4 @@ COPY --from=BUILD /go/bin/* /bin/
 ENTRYPOINT /bin/wfs3
 
 EXPOSE 8080
+
