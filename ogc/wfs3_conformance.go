@@ -1,7 +1,7 @@
 package ogc
 
 type Conformance struct {
-	ConformsTo []string `json:"conformsTo"`
+	ConformsTo []string `json:"conformsTo,omitempty"`
 }
 
 func NewConformance() *Conformance {

@@ -3,7 +3,7 @@ package ogc
 type Bbox struct {
 
 	Crs string `json:"CRS,omitempty"`
-	Coords []float64 `json:"bbox"`
+	Coords []float64 `json:"bbox,omitempty"`
 
 }
 

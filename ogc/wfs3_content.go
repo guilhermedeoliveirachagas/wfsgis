@@ -1,8 +1,8 @@
 package ogc
 
 type Content struct {
-	Links       []*Link           `json:"links"`
-	Collections []*CollectionInfo `json:"Collections"`
+	Links       []*Link           `json:"links,omitempty"`
+	Collections []*CollectionInfo `json:"Collections,omitempty"`
 }
 
 func NewContent() (*Content) {

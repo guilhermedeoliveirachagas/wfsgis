@@ -2,8 +2,8 @@ package ogc
 
 // A FeatureCollection correlates to a GeoJSON feature collection.
 type FeatureCollection struct {
-	Type     string     `json:"type"`
-	Features []*Feature `json:"features"`
+	Type     string     `json:"type,omitempty"`
+	Features []*Feature `json:"features,omitempty"`
 }
 
 func NewFeatureCollection() *FeatureCollection {
@@ -12,3 +12,4 @@ func NewFeatureCollection() *FeatureCollection {
 		Features: []*Feature{},
 	}
 }
+

@@ -1,8 +1,8 @@
 package ogc
 
 type CollectionInfo struct {
-	Name        string   `json:"name" db:"table_name"`
-	Links       []*Link  `json:"links" db:"links"`
+	Name        string   `json:"name,omitempty" db:"table_name"`
+	Links       []*Link  `json:"links,omitempty" db:"links"`
 	Title       string   `json:"title,omitempty" db:"title"`
 	Description string   `json:"description,omitempty" db:"description"`
 	Extent      *Bbox    `json:"extent,omitempty" db:"extent"`

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+	"github.com/lib/pq"
 
 	"github.com/paulmach/orb/encoding/wkb"
 
@@ -17,25 +18,30 @@ import (
 
 //creates a feature table based
 func (d *DB) CreateCollectionTable(collectionName string) error {
-
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, datetime TIMESTAMP NOT NULL, geom geometry NOT NULL, json JSONB NOT NULL)", collectionName)
+	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, instant TIMESTAMP, geom geometry NOT NULL, json JSONB NOT NULL)", collectionName)
 	_, err := d.db.Exec(sql)
 	if err != nil {
 		log.Printf("Error creating table: %v", err)
 		return err
 	}
 	return nil
-
 }
 
-func (d *DB) InsertFeature(collectionName string, datetime time.Time, features []*ogc.Feature) (bool, error) {
-
-	insert := fmt.Sprintf("INSERT INTO %s (datetime, geom, json) VALUES($1, ST_GeomFromText($2,4326), $3) RETURNING _fid as ID", collectionName)
-
+func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool, error) {
+	log.Printf("INSERT FEATURE SQL: %v", features)
+	insert := fmt.Sprintf("INSERT INTO %s (instant, geom, json) VALUES($1, ST_GeomFromText($2,4326), $3) RETURNING _fid as ID", collectionName)
 	for _, feature := range features {
+		log.Printf("FEATURE SQL: %v", feature)
 		data, _ := json.Marshal(feature.Properties)
 		g := wkt.MarshalString(feature.Geometry)
-		err := d.db.QueryRow(insert, datetime, g, data).Scan(&feature.ID)
+		var instant *time.Time
+		if feature.When != nil {
+			if feature.When.Type != "Instant" {
+				return false, fmt.Errorf("Only 'Instant' '@type' field of 'when' is supported")
+			}
+			instant = feature.When.Datetime
+		}
+		err := d.db.QueryRow(insert, instant, g, data).Scan(&feature.ID)
 		if err != nil {
 			log.Printf("Error creating feature: %v", err)
 			return false, err
@@ -45,7 +51,7 @@ func (d *DB) InsertFeature(collectionName string, datetime time.Time, features [
 }
 
 func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
-	qry := fmt.Sprintf("SELECT _fid, ST_AsBinary(geom), json FROM %s", request.CollectionName)
+	qry := fmt.Sprintf("SELECT _fid, instant, ST_AsBinary(geom), json FROM %s", request.CollectionName)
 	rows, err := d.db.Query(qry)
 	if err != nil {
 		return nil, err
@@ -56,7 +62,8 @@ func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) 
 		var id string
 		sc := wkb.Scanner(nil)
 		var jsonStr string
-		err := rows.Scan(&id, &sc, &jsonStr)
+		var instant pq.NullTime
+		err := rows.Scan(&id, &instant, &sc, &jsonStr)
 		if err != nil {
 			return nil, err
 		}
@@ -67,7 +74,12 @@ func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) 
 			return nil, err
 		}
 		f.ID = id
-		f.Type = "Point"
+
+		f.Type = sc.Geometry.GeoJSONType()
+
+		if instant.Valid {
+			f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
+		}
 		feats = append(feats, f)
 	}
 	return feats, nil
