@@ -1,7 +1,61 @@
-# WFS 3.0 FES Hackathon Repo
-Working repo for the 2018 WFS Hackathon in Ft. Collins
+# WFS 3.0 Server
+WFS 3.0 server with backend storage in Postgis
 
-# REST Examples
+## Usage
+
+* Create a docker-compose.yml file
+
+```yml
+version: '3.7'
+
+services:
+
+  wfs3:
+    image: flaviostutz/wfs3
+    ports: 
+      - 8080:8080
+    restart: always
+    environment:
+      - POSTGRES_HOST=postgis
+      - POSTGRES_USERNAME=wfs3
+      - POSTGRES_PASSWORD=wfs3
+      - POSTGRES_DBNAME=wfs3
+
+  pgadmin:
+    image: dpage/pgadmin4:4.8
+    ports:
+      - 8081:80
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin
+      - PGADMIN_DEFAULT_PASSWORD=admin
+
+  postgis:
+    # image: timescale/timescaledb-postgis:1.3.1-pg9.6
+    image: mdillon/postgis:11-alpine
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=wfs3
+      - POSTGRES_PASSWORD=wfs3
+      - POSTGRES_DB=wfs3
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  pg-data:
+
+```
+
+* Run "docker-compose up"
+
+* WFS3 API is available at http://localhost:8080/
+  * /collections/[collection_name]/items/[item_id]
+
+* Postgis Admin UI at http://localhost:8081
+
+
+### REST Examples
 
 * Create a new collection
 
