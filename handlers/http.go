@@ -26,11 +26,6 @@ func NewHTTPServer(d *model.DB) *HTTPServer {
 	httpServer.makeCollectionHandlers(d)
 	httpServer.makeFeatureHandlers(d)
 
-	// h.router.GET("/collections/:collid/schema", getCollectionInfo(d))
-	// h.router.PUT("/collections/:collid/schema", updateCollectionInfo())
-	// h.router.POST("/collections", createCollectionInfo(d))
-	// h.router.DELETE("/collections/:collid", deleteCollection())
-
 	return httpServer
 }
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"time"
+
 	"github.com/lib/pq"
 
 	"github.com/paulmach/orb/encoding/wkb"
@@ -27,31 +28,59 @@ func (d *DB) CreateCollectionTable(collectionName string) error {
 	return nil
 }
 
-func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) (bool, error) {
-	log.Printf("INSERT FEATURE SQL: %v", features)
+func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) ([]string, error) {
 	insert := fmt.Sprintf("INSERT INTO %s (instant, geom, json) VALUES($1, ST_GeomFromText($2,4326), $3) RETURNING _fid as ID", collectionName)
+	var nids []string
 	for _, feature := range features {
-		log.Printf("FEATURE SQL: %v", feature)
 		data, _ := json.Marshal(feature.Properties)
 		g := wkt.MarshalString(feature.Geometry)
 		var instant *time.Time
 		if feature.When != nil {
 			if feature.When.Type != "Instant" {
-				return false, fmt.Errorf("Only 'Instant' '@type' field of 'when' is supported")
+				return []string{}, fmt.Errorf("Only 'Instant' '@type' field of 'when' is supported")
 			}
 			instant = feature.When.Datetime
 		}
-		err := d.db.QueryRow(insert, instant, g, data).Scan(&feature.ID)
+		nid := ""
+		err := d.db.QueryRow(insert, instant, g, data).Scan(&nid)
 		if err != nil {
 			log.Printf("Error creating feature: %v", err)
-			return false, err
+			return []string{}, err
 		}
+		nids = append(nids, nid)
 	}
-	return true, nil
+	return nids, nil
 }
 
-func (d *DB) GetFeatures(request ogc.GetFeatureRequest) ([]*ogc.Feature, error) {
-	qry := fmt.Sprintf("SELECT _fid, instant, ST_AsBinary(geom), json FROM %s", request.CollectionName)
+//GetFeatures get features
+func (d *DB) GetFeatures(collectionName string, bbox *ogc.Bbox, filterAttrs map[string]string, limit int, dateStart *time.Time, dateEnd *time.Time) ([]*ogc.Feature, error) {
+
+	w := ""
+	and := ""
+	if bbox != nil || len(filterAttrs) > 0 || dateStart != nil || dateEnd != nil {
+		w = "WHERE "
+	}
+	if bbox != nil {
+		w = w + fmt.Sprintf("geom && ST_MakeEnvelope(%f, %f, %f, %f, 4326)", bbox.Coords[0], bbox.Coords[1], bbox.Coords[2], bbox.Coords[3])
+		and = "AND"
+	}
+	for k, v := range filterAttrs {
+		w = w + fmt.Sprintf(" %s json->>'%s' = '%s'", and, k, v)
+		and = "AND"
+	}
+	if dateStart != nil {
+		ds := dateStart.Format(time.RFC3339)
+		w = w + fmt.Sprintf(" %s instant >= '%s'", and, ds)
+		and = "AND"
+	}
+	if dateEnd != nil {
+		de := dateEnd.Format(time.RFC3339)
+		w = w + fmt.Sprintf(" %s instant <= '%s'", and, de)
+		and = "AND"
+	}
+
+	qry := fmt.Sprintf("SELECT _fid, instant, ST_AsBinary(geom), json FROM %s %s ORDER BY _fid LIMIT %d;", collectionName, w, limit)
+	log.Printf("GetFeatures: %s", qry)
 	rows, err := d.db.Query(qry)
 	if err != nil {
 		return nil, err
@@ -119,12 +148,14 @@ func (d *DB) GetItem(collectionId string, itemId string) (*ogc.FeatureCollection
 	//item id needs to be an int
 	numberId, _ := strconv.Atoi(itemId)
 
-	get := fmt.Sprintf("Select _fid, ST_AsBinary(geom), json from %s WHERE _fid = $1", collectionId)
+	get := fmt.Sprintf("Select _fid, instant, ST_AsBinary(geom), json from %s WHERE _fid = $1", collectionId)
 
 	var id int
 	var g orb.Point
 	var jsonStr string
-	err := d.db.QueryRow(get, numberId).Scan(&id, wkb.Scanner(&g), &jsonStr)
+	sc := wkb.Scanner(&g)
+	var instant pq.NullTime
+	err := d.db.QueryRow(get, numberId).Scan(&id, &instant, &sc, &jsonStr)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +166,11 @@ func (d *DB) GetItem(collectionId string, itemId string) (*ogc.FeatureCollection
 		return nil, err
 	}
 
-	f.Type = "Point"
+	f.Type = sc.Geometry.GeoJSONType()
+
+	if instant.Valid {
+		f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
+	}
 
 	fc := ogc.NewFeatureCollection()
 	fc.Features = append(fc.Features, f)
