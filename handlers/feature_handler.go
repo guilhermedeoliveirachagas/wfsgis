@@ -130,7 +130,7 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 		if timeStr != "" {
 			ts := strings.Split(timeStr, "/")
 			if len(ts) == 1 {
-				d, err := time.Parse(time.RFC3339, ts[0])
+				d, err := time.Parse(time.RFC3339, completeDate(ts[0], true))
 				if err != nil {
 					c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("Invalid time parameter. date0=%s", ts[0])})
 					return
@@ -139,7 +139,7 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 				dateEnd = &d
 			} else {
 				if ts[0] != "" {
-					d, err := time.Parse(time.RFC3339, ts[0])
+					d, err := time.Parse(time.RFC3339, completeDate(ts[0], true))
 					if err != nil {
 						c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("Invalid time parameter. date1=%s", ts[0])})
 						return
@@ -147,7 +147,7 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 					dateStart = &d
 				}
 				if ts[1] != "" {
-					d, err := time.Parse(time.RFC3339, ts[1])
+					d, err := time.Parse(time.RFC3339, completeDate(ts[1], false))
 					if err != nil {
 						c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("Invalid time parameter. date2=%s", ts[1])})
 						return
@@ -184,4 +184,15 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"type": "FeatureCollection", "features": fc})
 	}
 
+}
+
+func completeDate(dateStr string, midnight bool) string {
+	if len(dateStr) == 10 {
+		if midnight {
+			return dateStr + "T00:00:00Z"
+		} else {
+			return dateStr + "T23:59:59Z"
+		}
+	}
+	return dateStr
 }
