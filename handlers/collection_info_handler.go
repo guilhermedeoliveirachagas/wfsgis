@@ -1,8 +1,10 @@
 package handlers
 
 import (
-	"net/http"
+	"fmt"
 	"log"
+	"net/http"
+	"strings"
 
 	"github.com/boundlessgeo/wfs3/model"
 	"github.com/boundlessgeo/wfs3/ogc"
@@ -41,6 +43,7 @@ func getCollectionsInfo(db *model.DB) func(*gin.Context) {
 		cidbs := db.AllCollectionInfos()
 		cis := make([]*ogc.CollectionInfo, 0)
 		for _, v := range cidbs {
+			v.CollectionInfo.Name = strings.ReplaceAll(v.CollectionInfo.Name, "$", ":")
 			cis = append(cis, v.CollectionInfo)
 		}
 		c.JSON(http.StatusOK, gin.H{"collections": cis})
@@ -49,7 +52,13 @@ func getCollectionsInfo(db *model.DB) func(*gin.Context) {
 
 func getCollectionInfo(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		collInfo := db.FindCollection(c.Param("collid"))
+		collid := c.Param("collid")
+		collid = strings.ReplaceAll(collid, "$", ":")
+		collInfo, err := db.FindCollection(collid)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("err=%s", err)})
+		}
+		collInfo.CollectionInfo.Name = strings.ReplaceAll(collInfo.CollectionInfo.Name, ":", "$")
 		c.JSON(http.StatusOK, gin.H{"result": collInfo})
 	}
 }
@@ -64,6 +73,7 @@ func createCollectionInfo(db *model.DB) func(*gin.Context) {
 			c.JSON(http.StatusBadRequest, inputErr.Error)
 			return
 		}
+		coll.Name = strings.ReplaceAll(coll.Name, ":", "$")
 		collDB := model.CollectionInfoDB{CollectionInfo: &coll}
 		err := db.AddCollection(&collDB)
 		if err != nil {

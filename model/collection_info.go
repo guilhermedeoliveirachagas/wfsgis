@@ -1,8 +1,6 @@
 package model
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
 	"strings"
 
@@ -60,22 +58,17 @@ func (db *DB) AddCollection(coll *CollectionInfoDB) error {
 	return nil
 }
 
-func (db *DB) FindCollection(collName string) *CollectionInfoDB {
+func (db *DB) FindCollection(collName string) (*CollectionInfoDB, error) {
 	qry := "SELECT table_name,description,title,crs FROM collection_info WHERE table_name = $1"
 	log.Println("Querying:" + collName)
 	ci := new(ogc.CollectionInfo)
 	err := db.db.QueryRow(qry, collName).Scan(&ci.Name, &ci.Description, &ci.Title, pq.Array(&ci.CRS))
-	switch {
-	case err == sql.ErrNoRows:
-		log.Printf("No user with that ID.")
-	case err != nil:
-		log.Fatal(err)
-	default:
-		fmt.Printf("Layer is %s\n", collName)
+	if err != nil {
+		return nil, err
 	}
 	cidb := new(CollectionInfoDB)
 	cidb.CollectionInfo = ci
-	return cidb
+	return cidb, nil
 }
 
 func (d *DB) createCollectionInfoTable() error {

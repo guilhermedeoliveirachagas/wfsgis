@@ -41,7 +41,8 @@ Creates a feature
 */
 func createFeature(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		collectionName := c.Param("collid")
+		collid := c.Param("collid")
+		collid = strings.ReplaceAll(collid, ":", "$")
 
 		var fc ogc.FeatureCollection
 		data, _ := ioutil.ReadAll(c.Request.Body)
@@ -52,13 +53,13 @@ func createFeature(db *model.DB) func(*gin.Context) {
 			return
 		}
 
-		log.Printf("createFeature %v %v", collectionName, fc.Features)
+		log.Printf("createFeature %v %v", collid, fc.Features)
 		if len(fc.Features) == 0 {
 			c.JSON(http.StatusBadRequest, gin.H{"message": "No features found in json body"})
 			return
 		}
 
-		nids, err0 := db.InsertFeature(collectionName, fc.Features)
+		nids, err0 := db.InsertFeature(collid, fc.Features)
 		if err0 != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err0.Error()})
 			return
@@ -73,6 +74,7 @@ Deletes a feature
 func deleteFeature(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		collid := c.Param("collid")
+		collid = strings.ReplaceAll(collid, ":", "$")
 		itemid := c.Param("itemid")
 		if err := db.DeleteItem(collid, itemid); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -88,6 +90,7 @@ Gets a feature by id
 func getFeatureById(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		collid := c.Param("collid")
+		collid = strings.ReplaceAll(collid, ":", "$")
 		itemid := c.Param("itemid")
 		if item, err := db.GetItem(collid, itemid); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
@@ -102,7 +105,8 @@ Gets features
 */
 func getFeatures(db *model.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
-		collectionName := c.Param("collid")
+		collid := c.Param("collid")
+		collid = strings.ReplaceAll(collid, ":", "$")
 		limitStr := c.DefaultQuery("limit", "100")
 		timeStr := c.Query("time")
 		bboxStr := c.Query("bbox")
@@ -172,7 +176,7 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 			bbox = ogc.NewBbox(b0, b1, b2, b3)
 		}
 
-		fc, err := db.GetFeatures(collectionName, bbox, filterAttrs, limit, dateStart, dateEnd)
+		fc, err := db.GetFeatures(collid, bbox, filterAttrs, limit, dateStart, dateEnd)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
