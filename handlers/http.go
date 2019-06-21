@@ -8,6 +8,8 @@ import (
 
 	"github.com/boundlessgeo/wfs3/model"
 	"github.com/gin-gonic/gin"
+
+	cors "github.com/itsjamie/gin-cors"
 )
 
 type HTTPServer struct {
@@ -17,6 +19,17 @@ type HTTPServer struct {
 
 func NewHTTPServer(d *model.DB) *HTTPServer {
 	router := gin.Default()
+
+	router.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     true,
+		ValidateHeaders: false,
+	}))
+
 	httpServer := &HTTPServer{server: &http.Server{
 		Addr:    ":8080",
 		Handler: router,
@@ -29,7 +42,7 @@ func NewHTTPServer(d *model.DB) *HTTPServer {
 	return httpServer
 }
 
-//StartServer the main HTTP Server entry
+//Start the main HTTP Server entry
 func (s *HTTPServer) Start() error {
 	log.Print("Starting HTTP Server")
 	if err := s.server.ListenAndServe(); err != nil {
