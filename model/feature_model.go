@@ -104,7 +104,7 @@ func (d *DB) GetFeatures(collectionName string, bbox *ogc.Bbox, filterAttrs map[
 		}
 		f.ID = id
 
-		f.Type = sc.Geometry.GeoJSONType()
+		f.Type = "Feature"
 
 		if instant.Valid {
 			f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
@@ -166,7 +166,7 @@ func (d *DB) GetItem(collectionId string, itemId string) (*ogc.FeatureCollection
 		return nil, err
 	}
 
-	f.Type = sc.Geometry.GeoJSONType()
+	f.Type = "Feature"
 
 	if instant.Valid {
 		f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}

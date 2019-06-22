@@ -2,13 +2,16 @@ package ogc
 
 import (
 	"time"
-	"github.com/paulmach/orb"
+
+	"encoding/json"
+
 	"github.com/flaviostutz/orb/geojson"
+	"github.com/paulmach/orb"
 )
 
 type When struct {
-	Type         string           `json:"@type,omitempty"`
-	Datetime     *time.Time       `json:"datetime,omitempty"`
+	Type     string     `json:"@type,omitempty"`
+	Datetime *time.Time `json:"datetime,omitempty"`
 }
 
 type Feature struct {
@@ -20,7 +23,6 @@ type Feature struct {
 }
 
 func (f *Feature) UnmarshalJSON(b []byte) error {
-	var fg *geojson.Feature
 	fg, err := geojson.UnmarshalFeature(b)
 	if err != nil {
 		return err
@@ -41,6 +43,18 @@ func (f *Feature) UnmarshalJSON(b []byte) error {
 	}
 
 	return nil
+}
+
+func (f *Feature) MarshalJSON() ([]byte, error) {
+	m := make(map[string]interface{})
+	m["id"] = f.ID
+	m["type"] = f.Type
+	m["geometry"] = geojson.NewGeometry(f.Geometry)
+	m["properties"] = f.Properties
+	if f.When != nil {
+		m["when"] = f.When
+	}
+	return json.Marshal(m)
 }
 
 // func (f *Feature) MarshalJSON() ([]byte, error) {
