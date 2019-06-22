@@ -95,6 +95,7 @@ func getFeatureById(db *model.DB) func(*gin.Context) {
 		if item, err := db.GetItem(collid, itemid); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		} else {
+			c.Header().Set("Cache-Control", "public, max-age=7776000")
 			c.JSON(http.StatusOK, item)
 		}
 	}
@@ -181,6 +182,7 @@ func getFeatures(db *model.DB) func(*gin.Context) {
 			c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 			return
 		}
+		c.Header().Set("Cache-Control", "public, max-age=86400")
 		c.JSON(http.StatusOK, gin.H{"type": "FeatureCollection", "features": fc})
 	}
 
