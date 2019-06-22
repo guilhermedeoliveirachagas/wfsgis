@@ -35,6 +35,18 @@ func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) ([]st
 		data, _ := json.Marshal(feature.Properties)
 		g := wkt.MarshalString(feature.Geometry)
 		var instant *time.Time
+
+		//get timestamp from "time" property
+		ins, ok := feature.Properties["time"]
+		if ok {
+			ts, err := time.Parse(time.RFC3339, ins.(string))
+			if err != nil {
+				return []string{}, err
+			}
+			instant = &ts
+		}
+
+		//get timestamp from "when" attribute
 		if feature.When != nil {
 			if feature.When.Type != "Instant" {
 				return []string{}, fmt.Errorf("Only 'Instant' '@type' field of 'when' is supported")
@@ -107,6 +119,10 @@ func (d *DB) GetFeatures(collectionName string, bbox *ogc.Bbox, filterAttrs map[
 		f.Type = "Feature"
 
 		if instant.Valid {
+			//add "time" property
+			f.Properties["time"] = instant.Time.Format(time.RFC3339)
+
+			//add "when" attribute
 			f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
 		}
 		feats = append(feats, f)
@@ -169,6 +185,10 @@ func (d *DB) GetItem(collectionId string, itemId string) (*ogc.FeatureCollection
 	f.Type = "Feature"
 
 	if instant.Valid {
+		//add "time" property
+		f.Properties["time"] = instant.Time.Format(time.RFC3339)
+
+		//add "when" date info
 		f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
 	}
 

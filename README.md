@@ -1,6 +1,10 @@
 # WFS 3.0 Server
 WFS 3.0 server with backend storage in Postgis
 
+You can define the timestamp of the feature during insert by using two methods:
+  - add a "when" attribute to GeoJSON
+  - add a "time" attribute as one of the properties of GeoJSON in ISO format
+
 ## Usage
 
 * Create a docker-compose.yml file
@@ -101,11 +105,8 @@ curl -X POST \
             ]
          },
          "properties":{
-            "prop0":"value0"
-         },
-         "when": {
-         	"@type": "Instant",
-         	"datetime": "2019-02-01T15:04:02Z"
+            "prop0":"value0",
+            "time" : "2018-02-01T15:04:02Z"
          }
       },
       {
