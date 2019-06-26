@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/boundlessgeo/wfs3/ogc"
+	"github.com/flaviostutz/wfsgis/ogc"
 	"github.com/gin-gonic/gin"
 )
 

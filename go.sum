@@ -1,6 +1,6 @@
+github.com/boundlessgeo/wfs3 v0.0.0-20180315162327-a110408eec81 h1:PhE6HldT564JqEsnjWL3l60JlCDS2f1XZd2XsQwE1No=
+github.com/boundlessgeo/wfs3 v0.0.0-20180315162327-a110408eec81/go.mod h1:J36+FkOwHE5O9uZecD+qtTM9/zoIRFnZ+qRAi3mNkk8=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/flaviostutz/orb v0.1.4-0.20190614143409-ec45b5d33025 h1:eflHCXSwFeD/5+M/oXO9g7uR44SUyTsk7STtNF1Ipag=
-github.com/flaviostutz/orb v0.1.4-0.20190614143409-ec45b5d33025/go.mod h1:STVOSuHAzEkmY1OCcvQDNCr0j8+wPro/BG6MiPyT/aQ=
 github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3 h1:t8FVkw33L+wilf2QiWkw0UV77qRpcH/JHPKGpKa2E8g=
 github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3/go.mod h1:VJ0WA2NBN22VlZ2dKZQPAPnyWw5XTlK1KymzLKsr59s=
 github.com/gin-gonic/gin v1.4.0 h1:3tMoCCfM7ppqsR0ptz/wi1impNpT7/9wQtMZ8lr1mCQ=

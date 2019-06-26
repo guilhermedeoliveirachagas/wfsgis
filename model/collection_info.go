@@ -4,7 +4,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/boundlessgeo/wfs3/ogc"
+	"github.com/flaviostutz/wfsgis/ogc"
 	"github.com/lib/pq"
 )
 

@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/boundlessgeo/wfs3/model"
-	"github.com/boundlessgeo/wfs3/ogc"
+	"github.com/flaviostutz/wfsgis/model"
+	"github.com/flaviostutz/wfsgis/ogc"
 	"github.com/gin-gonic/gin"
 )
 

@@ -12,7 +12,7 @@ import (
 
 	"strconv"
 
-	"github.com/boundlessgeo/wfs3/ogc"
+	"github.com/flaviostutz/wfsgis/ogc"
 	"github.com/paulmach/orb"
 	"github.com/paulmach/orb/encoding/wkt"
 )
