@@ -1,5 +1,5 @@
-# WFS 3.0 Server
-WFS 3.0 server with backend storage in Postgis
+# WFSGIS
+A WFS 3.0 server with backend storage in Postgis
 
 You can define the timestamp of the feature during insert by using two methods (see examples):
   * add a "when" attribute to GeoJSON
@@ -14,8 +14,8 @@ version: '3.7'
 
 services:
 
-  wfs3:
-    image: flaviostutz/wfs3
+  wfsgis:
+    image: flaviostutz/wfsgis
     ports: 
       - 8080:8080
     restart: always

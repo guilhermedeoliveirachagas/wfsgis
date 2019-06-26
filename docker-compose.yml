@@ -2,9 +2,9 @@ version: '3.7'
 
 services:
 
-  wfs3:
+  wfsgis:
     build: .
-    image: flaviostutz/wfs3
+    image: flaviostutz/wfsgis
     ports: 
       - 8080:8080
     restart: always
