@@ -47,12 +47,13 @@ func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) ([]st
 		}
 
 		//get timestamp from "when" attribute
-		if feature.When != nil {
-			if feature.When.Type != "Instant" {
-				return []string{}, fmt.Errorf("Only 'Instant' '@type' field of 'when' is supported")
-			}
-			instant = feature.When.Datetime
-		}
+		// if feature.When != nil {
+		// 	if feature.When.Type != "Instant" {
+		// 		return []string{}, fmt.Errorf("Only 'Instant' '@type' field of 'when' is supported")
+		// 	}
+		// 	instant = feature.When.Datetime
+		// }
+
 		nid := ""
 		err := d.db.QueryRow(insert, instant, g, data).Scan(&nid)
 		if err != nil {
@@ -123,7 +124,7 @@ func (d *DB) GetFeatures(collectionName string, bbox *ogc.Bbox, filterAttrs map[
 			f.Properties["time"] = instant.Time.Format(time.RFC3339)
 
 			//add "when" attribute
-			f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
+			// f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
 		}
 		feats = append(feats, f)
 	}
@@ -189,7 +190,7 @@ func (d *DB) GetItem(collectionId string, itemId string) (*ogc.FeatureCollection
 		f.Properties["time"] = instant.Time.Format(time.RFC3339)
 
 		//add "when" date info
-		f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
+		// f.When = &ogc.When{Type: "Instant", Datetime: &instant.Time}
 	}
 
 	fc := ogc.NewFeatureCollection()

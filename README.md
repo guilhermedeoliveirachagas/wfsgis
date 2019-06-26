@@ -2,7 +2,6 @@
 A WFS 3.0 server with backend storage in Postgis
 
 You can define the timestamp of the feature during insert by using two methods (see examples):
-  * add a "when" attribute to GeoJSON
   * add a "time" attribute as one of the properties of GeoJSON in ISO format
 
 ## Usage
