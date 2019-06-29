@@ -25,7 +25,7 @@ func NewHTTPServer(d *model.DB) *HTTPServer {
 		Methods:         "GET, PUT, POST, DELETE",
 		RequestHeaders:  "Origin, Authorization, Content-Type",
 		ExposedHeaders:  "",
-		MaxAge:          50 * time.Second,
+		MaxAge:          120 * time.Second,
 		Credentials:     true,
 		ValidateHeaders: false,
 	}))

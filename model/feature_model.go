@@ -9,6 +9,7 @@ import (
 	"github.com/lib/pq"
 
 	"github.com/paulmach/orb/encoding/wkb"
+	"github.com/paulmach/orb/planar"
 
 	"strconv"
 
@@ -19,7 +20,7 @@ import (
 
 //creates a feature table based
 func (d *DB) CreateCollectionTable(collectionName string) error {
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, instant TIMESTAMP, geom geometry NOT NULL, json JSONB NOT NULL)", collectionName)
+	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, instant TIMESTAMP, geom geometry NOT NULL, json JSONB NOT NULL, size INTEGER)", collectionName)
 	_, err := d.db.Exec(sql)
 	if err != nil {
 		log.Printf("Error creating table: %v", err)
@@ -29,7 +30,7 @@ func (d *DB) CreateCollectionTable(collectionName string) error {
 }
 
 func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) ([]string, error) {
-	insert := fmt.Sprintf("INSERT INTO %s (instant, geom, json) VALUES($1, ST_GeomFromText($2,4326), $3) RETURNING _fid as ID", collectionName)
+	insert := fmt.Sprintf("INSERT INTO %s (instant, geom, json, size) VALUES($1, ST_GeomFromText($2,4326), $3, $4) RETURNING _fid as ID", collectionName)
 	var nids []string
 	for _, feature := range features {
 		data, _ := json.Marshal(feature.Properties)
@@ -54,8 +55,13 @@ func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) ([]st
 		// 	instant = feature.When.Datetime
 		// }
 
+		size := float64(1)
+		if feature.Geometry.Dimensions() > 0 {
+			size = planar.Length(feature.Geometry)
+		}
+
 		nid := ""
-		err := d.db.QueryRow(insert, instant, g, data).Scan(&nid)
+		err := d.db.QueryRow(insert, instant, g, data, int(size)).Scan(&nid)
 		if err != nil {
 			log.Printf("Error creating feature: %v", err)
 			return []string{}, err
@@ -92,7 +98,7 @@ func (d *DB) GetFeatures(collectionName string, bbox *ogc.Bbox, filterAttrs map[
 		and = "AND"
 	}
 
-	qry := fmt.Sprintf("SELECT _fid, instant, ST_AsBinary(geom), json FROM %s %s ORDER BY _fid LIMIT %d;", collectionName, w, limit)
+	qry := fmt.Sprintf("SELECT _fid, instant, ST_AsBinary(geom), json FROM %s %s ORDER BY size DESC LIMIT %d;", collectionName, w, limit)
 	log.Printf("GetFeatures: %s", qry)
 	rows, err := d.db.Query(qry)
 	if err != nil {
