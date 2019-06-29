@@ -40,9 +40,4 @@ services:
       - POSTGRES_USER=wfs3
       - POSTGRES_PASSWORD=wfs3
       - POSTGRES_DB=wfs3
-    volumes:
-      - pg-data:/var/lib/postgresql/data
-
-volumes:
-  pg-data:
 
