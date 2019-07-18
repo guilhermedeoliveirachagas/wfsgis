@@ -178,7 +178,7 @@ func (d *DB) GetItem(collectionId string, itemId string) (*ogc.FeatureCollection
 	var jsonStr string
 	sc := wkb.Scanner(&g)
 	var instant pq.NullTime
-	err := d.db.QueryRow(get, numberId).Scan(&id, &instant, &sc, &jsonStr)
+	err := d.db.QueryRow(get, numberId).Scan(&id, &instant, sc, &jsonStr)
 	if err != nil {
 		return nil, err
 	}
