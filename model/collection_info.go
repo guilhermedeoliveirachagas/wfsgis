@@ -1,6 +1,8 @@
 package model
 
 import (
+	"database/sql"
+	"fmt"
 	"log"
 	"strings"
 
@@ -43,19 +45,70 @@ func (db *DB) AllCollectionInfos() []*CollectionInfoDB {
 	return colls
 }
 
-func (db *DB) AddCollection(coll *CollectionInfoDB) error {
-	qry := "INSERT INTO collection_info (geom_type,table_name," +
+func (db *DB) AddCollection(coll *CollectionInfoDB) (bool, error) {
+	tx, err := db.db.Begin()
+	if err != nil {
+		return false, fmt.Errorf("Error on starting add collection transaction: %s", err)
+	}
+
+	dmlQuery := "INSERT INTO collection_info (geom_type,table_name," +
 		"description,title,crs) " +
 		"VALUES ($1,$2,$3,$4,ARRAY[$5])"
 	ci := coll.CollectionInfo
-	_, err := db.db.Exec(qry, coll.geomType, ci.Name, ci.Description,
-		ci.Title, strings.Join(ci.CRS, ","))
 
-	if err != nil {
-		return err
+	if _, insErr := tx.Exec(dmlQuery, coll.geomType, ci.Name, ci.Description,
+		ci.Title, strings.Join(ci.CRS, ",")); insErr != nil {
+		tx.Rollback()
+		pqErr := insErr.(*pq.Error)
+		if pqErr.Code == "23505" {
+			return true, fmt.Errorf("Collection named {%s} already created", coll.CollectionInfo.Name)
+		}
+		return false, fmt.Errorf("Error %s while inserting metadata for new collection named {%s}", insErr, coll.CollectionInfo.Name)
 	}
 
-	return nil
+	ddlQuery := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, instant TIMESTAMP, geom geometry NOT NULL, json JSONB NOT NULL, size INTEGER)", coll.CollectionInfo.Name)
+	if _, creErr := tx.Exec(ddlQuery); creErr != nil {
+		tx.Rollback()
+		return false, fmt.Errorf("Error %s while creating table for collection named {%s}", creErr, coll.CollectionInfo.Name)
+	}
+
+	tx.Commit()
+	return false, nil
+}
+
+func (db *DB) RemoveCollection(collName string) (bool, error) {
+
+	tx, err := db.db.Begin()
+	if err != nil {
+		return false, fmt.Errorf("Error on starting remove collection transaction: %s", err)
+	}
+
+	dmlQuery := "DELETE from collection_info WHERE table_name = $1"
+
+	if res, delErr := tx.Exec(dmlQuery, collName); delErr != nil {
+		tx.Rollback()
+		return false, fmt.Errorf("Error %s while deleting table %s", delErr, collName)
+	} else if rowsAffected, cntErr := res.RowsAffected(); cntErr != nil {
+		tx.Rollback()
+		return false, fmt.Errorf("Error %s reading delete result", delErr, collName)
+	} else if rowsAffected != 1 {
+		tx.Rollback()
+		return true, nil
+	}
+
+	ddlQuery := fmt.Sprintf("DROP TABLE %s", collName)
+	_, delTblErr := tx.Exec(ddlQuery)
+	if delTblErr != nil {
+		tx.Rollback()
+		pqErr := delTblErr.(*pq.Error)
+		if pqErr.Code == "42P01" {
+			return true, fmt.Errorf("Collection %s is on inconsistent state", collName)
+		}
+		return false, fmt.Errorf("Error dropping table %s, reason %s", collName, delTblErr)
+	}
+
+	tx.Commit()
+	return false, nil
 }
 
 func (db *DB) FindCollection(collName string) (*CollectionInfoDB, error) {
@@ -64,6 +117,9 @@ func (db *DB) FindCollection(collName string) (*CollectionInfoDB, error) {
 	ci := new(ogc.CollectionInfo)
 	err := db.db.QueryRow(qry, collName).Scan(&ci.Name, &ci.Description, &ci.Title, pq.Array(&ci.CRS))
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return &CollectionInfoDB{}, err
+		}
 		return nil, err
 	}
 	cidb := new(CollectionInfoDB)

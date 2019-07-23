@@ -18,17 +18,6 @@ import (
 	"github.com/paulmach/orb/encoding/wkt"
 )
 
-//creates a feature table based
-func (d *DB) CreateCollectionTable(collectionName string) error {
-	sql := fmt.Sprintf("CREATE TABLE IF NOT EXISTS %s (_fid SERIAL PRIMARY KEY, datetime TIMESTAMP DEFAULT CURRENT_TIMESTAMP, instant TIMESTAMP, geom geometry NOT NULL, json JSONB NOT NULL, size INTEGER)", collectionName)
-	_, err := d.db.Exec(sql)
-	if err != nil {
-		log.Printf("Error creating table: %v", err)
-		return err
-	}
-	return nil
-}
-
 func (d *DB) InsertFeature(collectionName string, features []*ogc.Feature) ([]string, error) {
 	insert := fmt.Sprintf("INSERT INTO %s (instant, geom, json, size) VALUES($1, ST_GeomFromText($2,4326), $3, $4) RETURNING _fid as ID", collectionName)
 	var nids []string

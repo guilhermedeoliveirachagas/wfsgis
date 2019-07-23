@@ -23,8 +23,19 @@ func (h *HTTPServer) makeCollectionHandlers(d *model.DB) {
 Deletes a collection
 */
 func deleteCollection(db *model.DB) func(*gin.Context) {
-	log.Printf("Not implemented yet")
-	return nil
+	return func(c *gin.Context) {
+		collid := c.Param("collid")
+		collid = strings.ReplaceAll(collid, "$", ":")
+		if missing, err := db.RemoveCollection(collid); err != nil {
+			c.JSON(http.StatusInternalServerError, err.Error())
+			return
+		} else if missing {
+			c.JSON(http.StatusNotFound, "")
+			return
+		}
+		c.JSON(http.StatusNoContent, "")
+		return
+	}
 }
 
 /**
@@ -56,7 +67,12 @@ func getCollectionInfo(db *model.DB) func(*gin.Context) {
 		collid = strings.ReplaceAll(collid, "$", ":")
 		collInfo, err := db.FindCollection(collid)
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"message": fmt.Sprintf("err=%s", err)})
+			if collInfo != nil && collInfo.CollectionInfo == nil{
+				c.JSON(http.StatusNotFound, gin.H{"message": fmt.Sprintf("err=%s", err)})
+			} else {
+				c.JSON(http.StatusInternalServerError, gin.H{"message": fmt.Sprintf("err=%s", err)})
+			}
+			return
 		}
 		collInfo.CollectionInfo.Name = strings.ReplaceAll(collInfo.CollectionInfo.Name, ":", "$")
 		c.JSON(http.StatusOK, gin.H{"result": collInfo})
@@ -75,17 +91,14 @@ func createCollectionInfo(db *model.DB) func(*gin.Context) {
 		}
 		coll.Name = strings.ReplaceAll(coll.Name, ":", "$")
 		collDB := model.CollectionInfoDB{CollectionInfo: &coll}
-		err := db.AddCollection(&collDB)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
+		if duplicate, err := db.AddCollection(&collDB); err != nil {
+			if duplicate {
+				c.JSON(http.StatusConflict, err.Error())
+			} else {
+				c.JSON(http.StatusInternalServerError, err.Error())
+			}
 			return
 		}
-		err = db.CreateCollectionTable(coll.Name)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, err.Error())
-			return
-		}
-
 		c.JSON(http.StatusCreated, "")
 	}
 }
