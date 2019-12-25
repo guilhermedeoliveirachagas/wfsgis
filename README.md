@@ -4,6 +4,8 @@ A WFS 3.0 server with backend storage in Postgis
 You can define the timestamp of the feature during insert by using two methods (see examples):
   * add a "time" attribute as one of the properties of GeoJSON in ISO format
 
+See a brief demo on how to add geographic points and show them in a browser at https://youtu.be/HSv-w5_Cc6U
+
 ## Usage
 
 * Create a docker-compose.yml file
