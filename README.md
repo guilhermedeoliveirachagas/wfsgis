@@ -1,4 +1,7 @@
 # WFSGIS
+
+<img src="https://img.shields.io/docker/automated/flaviostutz/wfsgis"/>
+
 A WFS 3.0 server with backend storage in Postgis
 
 You can define the timestamp of the feature during insert by using two methods (see examples):
