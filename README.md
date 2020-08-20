@@ -1,6 +1,7 @@
 # WFSGIS
 
-<img src="https://img.shields.io/docker/automated/flaviostutz/wfsgis"/>
+<img src="https://img.shields.io/docker/automated/flaviostutz/wfsgis"/><br/>
+[<img src="https://goreportcard.com/badge/github.com/flaviostutz/wfsgis"/>](https://goreportcard.com/report/github.com/flaviostutz/wfsgis)
 
 A WFS 3.0 server with backend storage in Postgis
 
