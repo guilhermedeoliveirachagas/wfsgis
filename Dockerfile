@@ -23,5 +23,5 @@ ENV POSTGRES_PASSWORD=postgres
 COPY --from=BUILD /go/bin/* /bin/
 ENTRYPOINT /bin/wfs3
 
-EXPOSE 8080
+EXPOSE 5398
 
